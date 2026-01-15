@@ -45,7 +45,7 @@ bot.command('help', (ctx) => {
 });
 
 // Command: /setbudget
-bot.command('setbudget', (ctx) => {
+bot.command('setbudget', async (ctx) => {
   if (!ctx.chat) {
     ctx.reply('❌ Ошибка: не удалось определить чат');
     return;
@@ -66,7 +66,17 @@ bot.command('setbudget', (ctx) => {
     { parse_mode: 'Markdown' }
   );
 
-  updatePinnedMessage(ctx);
+  // Automatically pin the status message
+  try {
+    const message = formatBudgetMessage(budget);
+    const sentMessage = await ctx.reply(message, { parse_mode: 'Markdown' });
+
+    await ctx.pinChatMessage(sentMessage.message_id);
+
+    budgetStorage.updatePinnedMessageId(ctx.chat.id, sentMessage.message_id);
+  } catch (error) {
+    console.error('Error pinning message:', error);
+  }
 });
 
 // Command: /status
@@ -114,7 +124,7 @@ bot.command('pin', async (ctx) => {
 });
 
 // Command: /reset
-bot.command('reset', (ctx) => {
+bot.command('reset', async (ctx) => {
   if (!ctx.chat) {
     ctx.reply('❌ Ошибка: не удалось определить чат');
     return;

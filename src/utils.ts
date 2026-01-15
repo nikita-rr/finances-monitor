@@ -1,7 +1,9 @@
 import { BudgetData } from './types';
 
 export function formatBudgetMessage(budget: BudgetData): string {
-  const monthlyRemaining = budget.monthlyBudget - budget.currentSpent;
+  // currentSpent может быть отрицательным из-за старых данных, берем абсолютное значение
+  const spent = Math.abs(budget.currentSpent);
+  const monthlyRemaining = budget.monthlyBudget - spent;
   const dailyBudget = budget.monthlyBudget / 30;
 
   const now = new Date();
@@ -11,13 +13,13 @@ export function formatBudgetMessage(budget: BudgetData): string {
       (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24)
     ) + 1;
   const currentDay = Math.min(daysPassed, 30);
-  const dailyRemaining = dailyBudget * currentDay - budget.currentSpent;
+  const dailyRemaining = dailyBudget * currentDay - spent;
 
   const message = `
 📊 *Статус Бюджета*
 
 💰 *Месячный бюджет:* ${budget.monthlyBudget.toFixed(2)} руб.
-💸 *Потрачено:* ${budget.currentSpent.toFixed(2)} руб.
+💸 *Потрачено:* ${spent.toFixed(2)} руб.
 ✅ *Осталось на месяц:* ${monthlyRemaining.toFixed(2)} руб.
 
 📅 *День:* ${currentDay}/30

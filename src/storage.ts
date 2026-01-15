@@ -66,7 +66,8 @@ class BudgetStorage {
     };
 
     budget.transactions.push(transaction);
-    budget.currentSpent += amount;
+    // Расходы (отрицательные) уменьшают бюджет, доходы (положительные) увеличивают
+    budget.currentSpent -= amount; // Меняем знак: -300 становится +300 для currentSpent
 
     this.saveToFile();
     return budget;
