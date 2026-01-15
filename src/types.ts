@@ -4,6 +4,7 @@ export interface BudgetData {
   transactions: Transaction[];
   pinnedMessageId?: number;
   createdDate: Date;
+  period: number; // Количество дней для распределения бюджета (по умолчанию 30)
 }
 
 export interface Transaction {

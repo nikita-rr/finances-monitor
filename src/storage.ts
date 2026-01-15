@@ -31,12 +31,13 @@ class BudgetStorage {
     }
   }
 
-  initBudget(chatId: number, monthlyBudget: number): BudgetData {
+  initBudget(chatId: number, monthlyBudget: number, period: number = 30): BudgetData {
     const budget: BudgetData = {
       monthlyBudget,
       currentSpent: 0,
       transactions: [],
       createdDate: new Date(),
+      period,
     };
     this.budgets[chatId] = budget;
     this.saveToFile();
@@ -84,6 +85,18 @@ class BudgetStorage {
     }
   }
 
+  resetTransactions(chatId: number): number {
+    const budget = this.budgets[chatId];
+    if (!budget) return 0;
+
+    const transactionsCount = budget.transactions.length;
+    budget.transactions = [];
+    budget.currentSpent = 0;
+
+    this.saveToFile();
+    return transactionsCount;
+  }
+
   getRemainingSummary(
     chatId: number
   ): {
@@ -94,6 +107,7 @@ class BudgetStorage {
     const budget = this.budgets[chatId];
     if (!budget) return null;
 
+    const period = budget.period || 30;
     const now = new Date();
     const createdDate = new Date(budget.createdDate);
     const daysPassed =
@@ -102,13 +116,13 @@ class BudgetStorage {
       ) + 1;
 
     const monthlyRemaining = budget.monthlyBudget - budget.currentSpent;
-    const dailyBudget = budget.monthlyBudget / 30;
+    const dailyBudget = budget.monthlyBudget / period;
     const dailyRemaining = dailyBudget * daysPassed - budget.currentSpent;
 
     return {
       monthlyRemaining,
       dailyRemaining,
-      daysPassed: Math.min(daysPassed, 30),
+      daysPassed: Math.min(daysPassed, period),
     };
   }
 }

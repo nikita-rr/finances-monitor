@@ -4,7 +4,8 @@ export function formatBudgetMessage(budget: BudgetData): string {
   // currentSpent может быть отрицательным из-за старых данных, берем абсолютное значение
   const spent = Math.abs(budget.currentSpent);
   const monthlyRemaining = budget.monthlyBudget - spent;
-  const dailyBudget = budget.monthlyBudget / 30;
+  const period = budget.period || 30;
+  const dailyBudget = budget.monthlyBudget / period;
 
   const now = new Date();
   const createdDate = new Date(budget.createdDate);
@@ -12,17 +13,17 @@ export function formatBudgetMessage(budget: BudgetData): string {
     Math.floor(
       (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24)
     ) + 1;
-  const currentDay = Math.min(daysPassed, 30);
+  const currentDay = Math.min(daysPassed, period);
   const dailyRemaining = dailyBudget * currentDay - spent;
 
   const message = `
 📊 *Статус Бюджета*
 
-💰 *Месячный бюджет:* ${budget.monthlyBudget.toFixed(2)} руб.
+💰 *Бюджет на период:* ${budget.monthlyBudget.toFixed(2)} руб.
 💸 *Потрачено:* ${spent.toFixed(2)} руб.
-✅ *Осталось на месяц:* ${monthlyRemaining.toFixed(2)} руб.
+✅ *Осталось:* ${monthlyRemaining.toFixed(2)} руб.
 
-📅 *День:* ${currentDay}/30
+📅 *День:* ${currentDay}/${period}
 📈 *Дневной лимит:* ${dailyBudget.toFixed(2)} руб.
 💳 *На сегодня осталось:* ${Math.max(0, dailyRemaining).toFixed(2)} руб.
 
@@ -33,7 +34,7 @@ ${
 }
 ${
   monthlyRemaining < 0
-    ? `🚨 *Превышен месячный бюджет на:* ${Math.abs(monthlyRemaining).toFixed(2)} руб.`
+    ? `🚨 *Превышен бюджет на:* ${Math.abs(monthlyRemaining).toFixed(2)} руб.`
     : ''
 }
 
