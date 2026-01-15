@@ -37,12 +37,12 @@ ${
     : ''
 }
 
-📝 *Последние транзакции:*
+📝 *Последние траты:*
 `;
 
   const recentTransactions = budget.transactions.slice(-5).reverse();
   if (recentTransactions.length === 0) {
-    return message + '\nНет транзакций';
+    return message + '\nНет трат';
   }
 
   const transactions = recentTransactions
@@ -58,15 +58,16 @@ ${
 export function parseTransactions(text: string): Array<{ amount: number; description: string }> {
   const transactions: Array<{ amount: number; description: string }> = [];
   
-  // Regex pattern: -number description, -number description
-  const pattern = /(-?\d+(?:\.\d{1,2})?)\s+([^-\n]+?)(?=\s*-\d|$)/g;
+  // Regex pattern: число с необязательным описанием
+  const pattern = /(-?\d+(?:\.\d{1,2})?)(?:\s+([^-\n]+?))?(?=\s*-?\d|$)/g;
   let match;
 
   while ((match = pattern.exec(text)) !== null) {
     const amount = parseFloat(match[1]);
-    const description = match[2].trim();
+    const description = match[2] ? match[2].trim() : 'без описания';
 
-    if (description) {
+    // Проверяем что число валидное
+    if (!isNaN(amount)) {
       transactions.push({
         amount,
         description,

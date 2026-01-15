@@ -1,24 +1,31 @@
 {
   "507754353": {
-    "monthlyBudget": 45000,
+    "monthlyBudget": 30000,
     "currentSpent": 100,
     "transactions": [
       {
         "amount": -300,
         "description": "сигареты",
-        "date": "2026-01-15T17:50:47.351Z",
+        "date": "2026-01-15T17:59:06.758Z",
         "userId": 507754353,
         "userName": "Nikita"
       },
       {
-        "amount": 200,
-        "description": "пришел возврат по ВБ",
-        "date": "2026-01-15T17:51:02.391Z",
+        "amount": -300,
+        "description": "без описания",
+        "date": "2026-01-15T17:59:44.115Z",
+        "userId": 507754353,
+        "userName": "Nikita"
+      },
+      {
+        "amount": 500,
+        "description": "без описания",
+        "date": "2026-01-15T17:59:49.968Z",
         "userId": 507754353,
         "userName": "Nikita"
       }
     ],
-    "createdDate": "2026-01-15T17:50:34.572Z",
-    "pinnedMessageId": 37
+    "createdDate": "2026-01-15T17:58:23.146Z",
+    "pinnedMessageId": 51
   }
 }
