@@ -50,11 +50,6 @@ bot.command('help', (ctx) => {
 
 // Command: /setbudget
 bot.command('setbudget', async (ctx) => {
-  if (!ctx.chat) {
-    ctx.reply('❌ Ошибка: не удалось определить чат');
-    return;
-  }
-
   const args = ctx.message?.text.split(' ');
   const amount = parseFloat(args?.[1] || '');
   const period = args?.[2] ? parseInt(args[2]) : 30;
@@ -69,9 +64,9 @@ bot.command('setbudget', async (ctx) => {
     return;
   }
 
-  const budget = budgetStorage.initBudget(ctx.chat.id, amount, period);
+  const budget = budgetStorage.initBudget(amount, period);
   ctx.reply(
-    `✅ Бюджет установлен на *${amount.toFixed(2)} руб.* на *${period} дней*\n` +
+    `✅ Общий бюджет установлен на *${amount.toFixed(2)} руб.* на *${period} дней*\n` +
     `📅 Дневной лимит: *${(amount / period).toFixed(2)} руб.*`,
     { parse_mode: 'Markdown' }
   );
@@ -81,9 +76,11 @@ bot.command('setbudget', async (ctx) => {
     const message = formatBudgetMessage(budget);
     const sentMessage = await ctx.reply(message, { parse_mode: 'Markdown' });
 
-    await ctx.pinChatMessage(sentMessage.message_id);
+    if (ctx.chat?.type === 'supergroup' || ctx.chat?.type === 'group') {
+      await ctx.pinChatMessage(sentMessage.message_id);
+    }
 
-    budgetStorage.updatePinnedMessageId(ctx.chat.id, sentMessage.message_id);
+    budgetStorage.updatePinnedMessageId(sentMessage.message_id);
   } catch (error) {
     console.error('Error pinning message:', error);
   }
@@ -91,12 +88,7 @@ bot.command('setbudget', async (ctx) => {
 
 // Command: /status
 bot.command('status', (ctx) => {
-  if (!ctx.chat) {
-    ctx.reply('❌ Ошибка: не удалось определить чат');
-    return;
-  }
-
-  const budget = budgetStorage.getBudget(ctx.chat.id);
+  const budget = budgetStorage.getBudget();
   if (!budget) {
     ctx.reply('❌ Бюджет не установлен. Используйте /setbudget <сумма>');
     return;
@@ -108,12 +100,7 @@ bot.command('status', (ctx) => {
 
 // Command: /pin
 bot.command('pin', async (ctx) => {
-  if (!ctx.chat) {
-    ctx.reply('❌ Ошибка: не удалось определить чат');
-    return;
-  }
-
-  const budget = budgetStorage.getBudget(ctx.chat.id);
+  const budget = budgetStorage.getBudget();
   if (!budget) {
     ctx.reply('❌ Бюджет не установлен. Используйте /setbudget <сумма>');
     return;
@@ -123,9 +110,11 @@ bot.command('pin', async (ctx) => {
     const message = formatBudgetMessage(budget);
     const sentMessage = await ctx.reply(message, { parse_mode: 'Markdown' });
 
-    await ctx.pinChatMessage(sentMessage.message_id);
+    if (ctx.chat?.type === 'supergroup' || ctx.chat?.type === 'group') {
+      await ctx.pinChatMessage(sentMessage.message_id);
+    }
 
-    budgetStorage.updatePinnedMessageId(ctx.chat.id, sentMessage.message_id);
+    budgetStorage.updatePinnedMessageId(sentMessage.message_id);
     ctx.reply('✅ Сообщение со статусом закреплено!');
   } catch (error) {
     console.error('Error pinning message:', error);
@@ -135,19 +124,14 @@ bot.command('pin', async (ctx) => {
 
 // Command: /reset
 bot.command('reset', async (ctx) => {
-  if (!ctx.chat) {
-    ctx.reply('❌ Ошибка: не удалось определить чат');
-    return;
-  }
-
-  const budget = budgetStorage.getBudget(ctx.chat.id);
+  const budget = budgetStorage.getBudget();
   if (!budget) {
     ctx.reply('❌ Бюджет не установлен');
     return;
   }
 
   const period = budget.period || 30;
-  const transactionsCount = budgetStorage.resetTransactions(ctx.chat.id);
+  const transactionsCount = budgetStorage.resetTransactions();
   
   ctx.reply(
     `✅ Траты сброшены!\n\n` +
@@ -162,10 +146,6 @@ bot.command('reset', async (ctx) => {
 
 // Handle all text messages for transaction parsing
 bot.on(message('text'), async (ctx) => {
-  if (!ctx.chat) {
-    return;
-  }
-
   const text = ctx.message.text;
 
   // Skip if it's a command
@@ -173,7 +153,7 @@ bot.on(message('text'), async (ctx) => {
     return;
   }
 
-  const budget = budgetStorage.getBudget(ctx.chat.id);
+  const budget = budgetStorage.getBudget();
   if (!budget) {
     ctx.reply('❌ Бюджет не установлен. Используйте /setbudget <сумма>');
     return;
@@ -187,7 +167,6 @@ bot.on(message('text'), async (ctx) => {
   let addedMessage = '';
   for (const transaction of transactions) {
     budgetStorage.addTransaction(
-      ctx.chat.id,
       transaction.amount,
       transaction.description,
       ctx.from?.id || 0,
@@ -205,11 +184,7 @@ bot.on(message('text'), async (ctx) => {
 });
 
 async function updatePinnedMessage(ctx: Context): Promise<void> {
-  if (!ctx.chat) {
-    return;
-  }
-
-  const budget = budgetStorage.getBudget(ctx.chat.id);
+  const budget = budgetStorage.getBudget();
   if (!budget || !budget.pinnedMessageId) {
     return;
   }
@@ -217,7 +192,7 @@ async function updatePinnedMessage(ctx: Context): Promise<void> {
   try {
     const message = formatBudgetMessage(budget);
     await ctx.telegram.editMessageText(
-      ctx.chat.id,
+      ctx.chat?.id || 0,
       budget.pinnedMessageId,
       undefined,
       message,

@@ -1,11 +1,11 @@
-import { BudgetData, Transaction, ChatBudget } from './types';
+import { BudgetData, Transaction } from './types';
 import * as fs from 'fs';
 import * as path from 'path';
 
 const DATA_FILE = path.join(__dirname, '../data.json');
 
 class BudgetStorage {
-  private budgets: ChatBudget = {};
+  private budget: BudgetData | null = null;
 
   constructor() {
     this.loadFromFile();
@@ -15,48 +15,48 @@ class BudgetStorage {
     try {
       if (fs.existsSync(DATA_FILE)) {
         const data = fs.readFileSync(DATA_FILE, 'utf-8');
-        this.budgets = JSON.parse(data);
+        const parsed = JSON.parse(data);
+        // Загружаем общий бюджет из файла
+        this.budget = parsed.budget || null;
       }
     } catch (error) {
       console.error('Error loading data from file:', error);
-      this.budgets = {};
+      this.budget = null;
     }
   }
 
   private saveToFile(): void {
     try {
-      fs.writeFileSync(DATA_FILE, JSON.stringify(this.budgets, null, 2));
+      const data = { budget: this.budget };
+      fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
     } catch (error) {
       console.error('Error saving data to file:', error);
     }
   }
 
-  initBudget(chatId: number, monthlyBudget: number, period: number = 30): BudgetData {
-    const budget: BudgetData = {
+  initBudget(monthlyBudget: number, period: number = 30): BudgetData {
+    this.budget = {
       monthlyBudget,
       currentSpent: 0,
       transactions: [],
       createdDate: new Date(),
       period,
     };
-    this.budgets[chatId] = budget;
     this.saveToFile();
-    return budget;
+    return this.budget;
   }
 
-  getBudget(chatId: number): BudgetData | null {
-    return this.budgets[chatId] || null;
+  getBudget(): BudgetData | null {
+    return this.budget;
   }
 
   addTransaction(
-    chatId: number,
     amount: number,
     description: string,
     userId: number,
     userName?: string
   ): BudgetData | null {
-    const budget = this.budgets[chatId];
-    if (!budget) return null;
+    if (!this.budget) return null;
 
     const transaction: Transaction = {
       amount,
@@ -66,58 +66,49 @@ class BudgetStorage {
       userName,
     };
 
-    budget.transactions.push(transaction);
-    // Расходы (отрицательные) уменьшают бюджет, доходы (положительные) увеличивают
-    budget.currentSpent -= amount; // Меняем знак: -300 становится +300 для currentSpent
+    this.budget.transactions.push(transaction);
+    this.budget.currentSpent -= amount;
 
     this.saveToFile();
-    return budget;
+    return this.budget;
   }
 
-  getAllBudgets(): ChatBudget {
-    return this.budgets;
-  }
-
-  updatePinnedMessageId(chatId: number, messageId: number): void {
-    if (this.budgets[chatId]) {
-      this.budgets[chatId].pinnedMessageId = messageId;
+  updatePinnedMessageId(messageId: number): void {
+    if (this.budget) {
+      this.budget.pinnedMessageId = messageId;
       this.saveToFile();
     }
   }
 
-  resetTransactions(chatId: number): number {
-    const budget = this.budgets[chatId];
-    if (!budget) return 0;
+  resetTransactions(): number {
+    if (!this.budget) return 0;
 
-    const transactionsCount = budget.transactions.length;
-    budget.transactions = [];
-    budget.currentSpent = 0;
+    const transactionsCount = this.budget.transactions.length;
+    this.budget.transactions = [];
+    this.budget.currentSpent = 0;
 
     this.saveToFile();
     return transactionsCount;
   }
 
-  getRemainingSummary(
-    chatId: number
-  ): {
+  getRemainingSummary(): {
     monthlyRemaining: number;
     dailyRemaining: number;
     daysPassed: number;
   } | null {
-    const budget = this.budgets[chatId];
-    if (!budget) return null;
+    if (!this.budget) return null;
 
-    const period = budget.period || 30;
+    const period = this.budget.period || 30;
     const now = new Date();
-    const createdDate = new Date(budget.createdDate);
+    const createdDate = new Date(this.budget.createdDate);
     const daysPassed =
       Math.floor(
         (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24)
       ) + 1;
 
-    const monthlyRemaining = budget.monthlyBudget - budget.currentSpent;
-    const dailyBudget = budget.monthlyBudget / period;
-    const dailyRemaining = dailyBudget * daysPassed - budget.currentSpent;
+    const monthlyRemaining = this.budget.monthlyBudget - this.budget.currentSpent;
+    const dailyBudget = this.budget.monthlyBudget / period;
+    const dailyRemaining = dailyBudget * daysPassed - this.budget.currentSpent;
 
     return {
       monthlyRemaining,

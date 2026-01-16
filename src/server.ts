@@ -13,10 +13,9 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 // API Routes
 
-// Get budget for user
-app.get('/api/budget/:userId', (req, res) => {
-  const { userId } = req.params;
-  const budget = budgetStorage.getBudget(parseInt(userId));
+// Get shared budget
+app.get('/api/budget', (req, res) => {
+  const budget = budgetStorage.getBudget();
   
   if (budget) {
     res.json({ success: true, budget });
@@ -25,9 +24,8 @@ app.get('/api/budget/:userId', (req, res) => {
   }
 });
 
-// Set budget for user
-app.post('/api/budget/:userId', (req, res) => {
-  const { userId } = req.params;
+// Set shared budget
+app.post('/api/budget', (req, res) => {
   const { amount, period } = req.body;
   
   if (!amount || amount <= 0) {
@@ -35,41 +33,38 @@ app.post('/api/budget/:userId', (req, res) => {
   }
   
   const budgetPeriod = period || 30;
-  const budget = budgetStorage.initBudget(parseInt(userId), amount, budgetPeriod);
+  const budget = budgetStorage.initBudget(amount, budgetPeriod);
   
   res.json({ success: true, budget });
 });
 
-// Add transaction
-app.post('/api/transaction/:userId', (req, res) => {
-  const { userId } = req.params;
-  const { amount, description } = req.body;
+// Add transaction to shared budget
+app.post('/api/transaction', (req, res) => {
+  const { amount, description, userId, userName } = req.body;
   
   if (amount === undefined || amount === 0) {
     return res.status(400).json({ success: false, message: 'Invalid amount' });
   }
   
-  const budget = budgetStorage.getBudget(parseInt(userId));
+  const budget = budgetStorage.getBudget();
   if (!budget) {
     return res.status(404).json({ success: false, message: 'Budget not found' });
   }
   
   budgetStorage.addTransaction(
-    parseInt(userId),
     amount,
     description || 'без описания',
-    parseInt(userId),
-    'User'
+    userId || 0,
+    userName || 'User'
   );
   
-  const updatedBudget = budgetStorage.getBudget(parseInt(userId));
+  const updatedBudget = budgetStorage.getBudget();
   res.json({ success: true, budget: updatedBudget });
 });
 
 // Reset transactions
-app.post('/api/budget/:userId/reset', (req, res) => {
-  const { userId } = req.params;
-  const count = budgetStorage.resetTransactions(parseInt(userId));
+app.post('/api/budget/reset', (req, res) => {
+  const count = budgetStorage.resetTransactions();
   
   res.json({ success: true, deletedCount: count });
 });

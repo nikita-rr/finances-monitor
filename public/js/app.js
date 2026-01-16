@@ -14,8 +14,8 @@ document.documentElement.style.setProperty('--tg-theme-secondary-bg-color', tg.t
 // API base URL
 const API_URL = window.location.origin;
 
-// Get user ID from Telegram
-const userId = tg.initDataUnsafe?.user?.id || 'demo';
+// Get user ID from Telegram (not needed for shared budget, but keep for compatibility)
+const userId = tg.initDataUnsafe?.user?.id || 0;
 
 // State
 let currentTransactionType = 'expense';
@@ -46,7 +46,7 @@ loadBudget();
 // Functions
 async function loadBudget() {
     try {
-        const response = await fetch(`${API_URL}/api/budget/${userId}`);
+        const response = await fetch(`${API_URL}/api/budget`);
         const data = await response.json();
         
         if (data.success && data.budget) {
@@ -252,7 +252,7 @@ async function setBudget() {
     try {
         tg.MainButton.showProgress();
         
-        const response = await fetch(`${API_URL}/api/budget/${userId}`, {
+        const response = await fetch(`${API_URL}/api/budget`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ amount, period })
@@ -288,12 +288,14 @@ async function submitTransaction() {
     try {
         tg.MainButton.showProgress();
         
-        const response = await fetch(`${API_URL}/api/transaction/${userId}`, {
+        const response = await fetch(`${API_URL}/api/transaction`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 amount: finalAmount,
-                description
+                description,
+                userId,
+                userName: tg.initDataUnsafe?.user?.first_name || 'User'
             })
         });
         
