@@ -5,19 +5,31 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "ts-node src/index.ts",
+    "dev:miniapp": "ts-node src/server.ts",
+    "tunnel:ngrok": "ngrok http 3000",
+    "tunnel:local": "npx localtunnel --port 3000",
     "build": "tsc",
-    "start": "node dist/index.js"
+    "start": "node dist/server.js",
+    "start:bot": "node dist/index.js"
   },
-  "keywords": ["telegram", "budget", "finance"],
+  "keywords": [
+    "telegram",
+    "budget",
+    "finance"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
     "dotenv": "^16.0.3",
+    "express": "^4.22.1",
     "telegraf": "^4.12.2"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^4.17.25",
     "@types/node": "^20.0.0",
-    "typescript": "^5.0.0",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.0"
   }
 }
