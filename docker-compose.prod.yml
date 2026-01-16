@@ -6,6 +6,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
+      - BOT_TOKEN=${BOT_TOKEN}
     volumes:
       - ./data.json:/app/data.json
     command: ["node", "dist/server.js"]
