@@ -48,10 +48,13 @@ export function formatBudgetMessage(budget: BudgetData): string {
   let canSpendToday = dailyBudget + (saved > 0 ? saved : 0);
 
   let savedInfo = '';
-  if (saved > 0 && completedDays > 0) {
-    savedInfo = `\n👌 *Сэкономлено:* ${saved.toFixed(2)} руб.`;
-  } else if (saved < 0) {
-    savedInfo = `\n⚠️ *Перерасход:* ${Math.abs(saved).toFixed(2)} руб.`;
+  // Показываем экономию/перерасход только если есть завершенные дни
+  if (completedDays > 0) {
+    if (saved > 0) {
+      savedInfo = `\n👌 *Сэкономлено:* ${saved.toFixed(2)} руб.`;
+    } else if (saved < 0) {
+      savedInfo = `\n⚠️ *Перерасход:* ${Math.abs(saved).toFixed(2)} руб.`;
+    }
   }
 
   console.log({saved, remaining, canSpendToday, planedSpentCompleted, planedRemainingCompleted, completedDays});
