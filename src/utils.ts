@@ -79,11 +79,31 @@ export function formatBudgetMessage(budget: BudgetData): string {
   const netSpendToday = todayNet < 0 ? Math.abs(todayNet) : 0; // расходы минус доходы за сегодня
   const overspendToday = netSpendToday - dailyBudget;
   
+  // Рассчитываем влияние на будущий дневной лимит
+  const daysLeft = period - currentDay;
+  let futureLimitWarning = '';
+  
+  if (daysLeft > 0 && todayNet !== 0) {
+    const futureDailyBudget = remaining / daysLeft;
+    const currentBaseDailyBudget = remainingWithoutToday / period;
+    const limitChange = currentBaseDailyBudget - futureDailyBudget;
+    
+    if (Math.abs(limitChange) > 0.01) { // показываем если изменение существенное (больше 1 копейки)
+      if (limitChange > 0) {
+        futureLimitWarning = `\n⚠️ *Перерасход! Дневной лимит с завтра уменьшится на:* ${limitChange.toFixed(2)} руб. (будет ${futureDailyBudget.toFixed(2)} руб.)`;
+      } else {
+        futureLimitWarning = `\n✅👌 *Дневной лимит с завтра увеличится на:* ${Math.abs(limitChange).toFixed(2)} руб. (будет ${futureDailyBudget.toFixed(2)} руб.)`;
+      }
+    }
+  }
+  
   if (canSpendToday < 0) {
     warning = `\n⚠️ *Превышен дневной лимит на:* ${Math.abs(canSpendToday).toFixed(2)} руб.`;
   } else if (overspendToday > 0) {
     warning = `\n⚠️ *Перерасход сегодня на:* ${overspendToday.toFixed(2)} руб.`;
   }
+  
+  warning += futureLimitWarning;
 
   const message = `
 📊 *Статус Бюджета*
