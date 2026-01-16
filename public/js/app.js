@@ -38,6 +38,51 @@ const userId = tg.initDataUnsafe?.user?.id || 0;
 // State
 let currentTransactionType = "expense";
 let budget = null;
+let eventSource = null;
+
+// Setup real-time updates via SSE
+function setupRealtimeUpdates() {
+  if (eventSource) {
+    eventSource.close();
+  }
+
+  eventSource = new EventSource(`${API_URL}/api/events`);
+
+  eventSource.onmessage = (event) => {
+    try {
+      const data = JSON.parse(event.data);
+      
+      if (data.type === 'connected') {
+        console.log('SSE connected');
+        if (data.budget) {
+          budget = data.budget;
+          renderBudgetStatus();
+          renderTransactions();
+          setBudgetCard.style.display = "none";
+        }
+      } else if (data.type === 'budget-update') {
+        console.log('Budget updated from server');
+        if (data.budget) {
+          budget = data.budget;
+          renderBudgetStatus();
+          renderTransactions();
+          setBudgetCard.style.display = "none";
+        }
+      }
+    } catch (error) {
+      console.error('Error parsing SSE message:', error);
+    }
+  };
+
+  eventSource.onerror = (error) => {
+    console.error('SSE error:', error);
+    // Reconnect after 3 seconds
+    setTimeout(() => {
+      console.log('Reconnecting SSE...');
+      setupRealtimeUpdates();
+    }, 3000);
+  };
+}
 
 // Elements
 const statusCard = document.getElementById("statusCard");
@@ -60,6 +105,7 @@ submitTransactionBtn.addEventListener("click", submitTransaction);
 
 // Initialize
 loadBudget();
+setupRealtimeUpdates();
 
 // Functions
 async function loadBudget() {

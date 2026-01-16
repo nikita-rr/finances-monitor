@@ -7,12 +7,53 @@ import { updatePinnedMessageFromAPI } from './bot';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Store SSE clients
+const sseClients: express.Response[] = [];
+
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../public')));
 
+// Subscribe to budget changes
+budgetStorage.onChange((budget) => {
+  console.log('Budget changed, notifying', sseClients.length, 'SSE clients');
+  // Notify all connected SSE clients
+  sseClients.forEach((client) => {
+    try {
+      client.write(`data: ${JSON.stringify({ type: 'budget-update', budget })}\n\n`);
+    } catch (error) {
+      console.error('Error sending SSE to client:', error);
+    }
+  });
+});
+
 // API Routes
+
+// SSE endpoint for real-time updates
+app.get('/api/events', (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders();
+
+  // Add client to the list
+  sseClients.push(res);
+  console.log('New SSE client connected. Total clients:', sseClients.length);
+
+  // Send initial budget data
+  const budget = budgetStorage.getBudget();
+  res.write(`data: ${JSON.stringify({ type: 'connected', budget })}\n\n`);
+
+  // Remove client on disconnect
+  req.on('close', () => {
+    const index = sseClients.indexOf(res);
+    if (index !== -1) {
+      sseClients.splice(index, 1);
+      console.log('SSE client disconnected. Total clients:', sseClients.length);
+    }
+  });
+});
 
 // Get shared budget
 app.get('/api/budget', (req, res) => {

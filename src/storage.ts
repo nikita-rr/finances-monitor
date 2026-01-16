@@ -6,9 +6,12 @@ const DATA_FILE = path.join(__dirname, '../data.json');
 
 class BudgetStorage {
   private budget: BudgetData | null = null;
+  private fileWatcher: fs.FSWatcher | null = null;
+  private changeCallbacks: Array<(budget: BudgetData | null) => void> = [];
 
   constructor() {
     this.loadFromFile();
+    this.watchFile();
   }
 
   private loadFromFile(): void {
@@ -23,6 +26,39 @@ class BudgetStorage {
       console.error('Error loading data from file:', error);
       this.budget = null;
     }
+  }
+
+  private watchFile(): void {
+    try {
+      this.fileWatcher = fs.watch(DATA_FILE, (eventType) => {
+        if (eventType === 'change') {
+          // Перезагружаем данные из файла
+          this.loadFromFile();
+          // Уведомляем подписчиков об изменениях
+          this.notifyChange();
+        }
+      });
+    } catch (error) {
+      console.error('Error watching data file:', error);
+    }
+  }
+
+  private notifyChange(): void {
+    this.changeCallbacks.forEach(callback => {
+      try {
+        callback(this.budget);
+      } catch (error) {
+        console.error('Error in change callback:', error);
+      }
+    });
+  }
+
+  onChange(callback: (budget: BudgetData | null) => void): void {
+    this.changeCallbacks.push(callback);
+  }
+
+  reload(): void {
+    this.loadFromFile();
   }
 
   private saveToFile(): void {
