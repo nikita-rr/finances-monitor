@@ -71,7 +71,7 @@ bot.command('setbudget', async (ctx) => {
       await ctx.pinChatMessage(sentMessage.message_id);
     }
 
-    budgetStorage.updatePinnedMessageId(sentMessage.message_id);
+    budgetStorage.updatePinnedMessageId(sentMessage.message_id, ctx.chat?.id);
   } catch (error) {
     console.error('Error pinning message:', error);
   }
@@ -105,7 +105,7 @@ bot.command('pin', async (ctx) => {
       await ctx.pinChatMessage(sentMessage.message_id);
     }
 
-    budgetStorage.updatePinnedMessageId(sentMessage.message_id);
+    budgetStorage.updatePinnedMessageId(sentMessage.message_id, ctx.chat?.id);
     ctx.reply('✅ Сообщение со статусом закреплено!');
   } catch (error) {
     console.error('Error pinning message:', error);
