@@ -15,8 +15,7 @@ export function formatBudgetMessage(budget: BudgetData): string {
   });
   
   const period = budget.period || 30;
-  const remaining = (budget.monthlyBudget) + total; // Остаток
-  const dailyBudget = remaining / period;
+  const remaining = (budget.monthlyBudget) + total; // Остаток (учитывает операции за сегодня)
 
   const now = new Date();
   const createdDate = new Date(budget.createdDate);
@@ -27,16 +26,29 @@ export function formatBudgetMessage(budget: BudgetData): string {
   const currentDay = Math.min(daysPassed, period);
   
   // Считаем только сегодняшние траты и доходы
-  let todayExpenses = 0;
+  let todayExpenses = 0; // абсолютные расходы за сегодня
+  let todayIncome = 0;   // доходы за сегодня
+  let todayNet = 0;      // чистый итог за сегодня (доходы - расходы)
   
   budget.transactions.forEach((t) => {
     const tDate = new Date(t.date);
     if (tDate.toDateString() === now.toDateString()) {
       if (t.amount < 0) {
         todayExpenses += Math.abs(t.amount);
+        todayNet += t.amount;
+      } else {
+        todayIncome += t.amount;
+        todayNet += t.amount;
       }
     }
   });
+
+  
+  // Дневной лимит без учета операций текущего дня
+  const remainingWithoutToday = remaining - todayNet;
+  const dailyBudget = remainingWithoutToday / period;
+  
+  todayNet += dailyBudget
 
   // Для расчета экономии используем только завершенные дни
   const completedDays = currentDay - 1;
@@ -44,7 +56,7 @@ export function formatBudgetMessage(budget: BudgetData): string {
   const planedRemainingCompleted = budget.monthlyBudget - planedSpentCompleted;
   
   // Экономия = фактический остаток - плановый остаток (по завершенным дням)
-  const saved = remaining - planedRemainingCompleted;
+  const saved = remainingWithoutToday - planedRemainingCompleted;
   let canSpendToday = dailyBudget + (saved > 0 ? saved : 0);
 
   let savedInfo = '';
@@ -57,15 +69,20 @@ export function formatBudgetMessage(budget: BudgetData): string {
     }
   }
 
-  console.log({saved, remaining, canSpendToday, planedSpentCompleted, planedRemainingCompleted, completedDays});
+  console.log({saved, remaining, remainingWithoutToday, todayNet, todayExpenses, todayIncome, dailyBudget, canSpendToday, planedSpentCompleted, planedRemainingCompleted, completedDays});
   
 
   // Можно потратить сегодня = дневной лимит + сэкономленное ранее
 
-  // Предупреждение при превышении лимита
+  // Предупреждение при превышении лимита (учитываем чистые траты за сегодня)
   let warning = '';
+  const netSpendToday = todayNet < 0 ? Math.abs(todayNet) : 0; // расходы минус доходы за сегодня
+  const overspendToday = netSpendToday - dailyBudget;
+  
   if (canSpendToday < 0) {
     warning = `\n⚠️ *Превышен дневной лимит на:* ${Math.abs(canSpendToday).toFixed(2)} руб.`;
+  } else if (overspendToday > 0) {
+    warning = `\n⚠️ *Перерасход сегодня на:* ${overspendToday.toFixed(2)} руб.`;
   }
 
   const message = `
@@ -74,11 +91,14 @@ export function formatBudgetMessage(budget: BudgetData): string {
 📅 *Период:* ${currentDay}/${period}
 💰 *Бюджет на период:* ${budget.monthlyBudget.toFixed(2)} руб.
 
+✅ *Остаток:* ${remaining.toFixed(2)} руб.
 💸 *Траты:* -${totalExpenses.toFixed(2)} руб.
 💵 *Пополнения:* +${totalIncome.toFixed(2)} руб.
-✅ *Остаток:* ${remaining.toFixed(2)} руб.
 
-📈 *Можно потратить сегодня:* ${canSpendToday.toFixed(2)} руб.${warning} ${savedInfo}
+📈 *Дневной лимит =) :* ${canSpendToday.toFixed(2)} руб.
+📅 *Баланс на сегодня:* ${(todayNet >= 0 ? '+' : '-')}${Math.abs(todayNet).toFixed(2)} руб.
+${warning} ${savedInfo}
+
 📝 *Последние траты:*
 `;
 
