@@ -13,6 +13,29 @@ if (!token) {
 
 const bot = new Telegraf(token);
 
+// Export bot and update function for use in server.ts
+export { bot };
+
+export async function updatePinnedMessageFromAPI(): Promise<void> {
+  const budget = budgetStorage.getBudget();
+  if (!budget || !budget.pinnedMessageId || !budget.pinnedChatId) {
+    return;
+  }
+
+  try {
+    const message = formatBudgetMessage(budget);
+    await bot.telegram.editMessageText(
+      budget.pinnedChatId,
+      budget.pinnedMessageId,
+      undefined,
+      message,
+      { parse_mode: 'Markdown' }
+    );
+  } catch (error) {
+    console.error('Error updating pinned message from API:', error);
+  }
+}
+
 // Command: /start
 bot.command('start', (ctx) => {
   ctx.reply(

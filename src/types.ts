@@ -3,6 +3,7 @@ export interface BudgetData {
   currentSpent: number;
   transactions: Transaction[];
   pinnedMessageId?: number;
+  pinnedChatId?: number;
   createdDate: Date;
   period: number; // Количество дней для распределения бюджета (по умолчанию 30)
 }

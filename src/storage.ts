@@ -73,9 +73,12 @@ class BudgetStorage {
     return this.budget;
   }
 
-  updatePinnedMessageId(messageId: number): void {
+  updatePinnedMessageId(messageId: number, chatId?: number): void {
     if (this.budget) {
       this.budget.pinnedMessageId = messageId;
+      if (chatId !== undefined) {
+        this.budget.pinnedChatId = chatId;
+      }
       this.saveToFile();
     }
   }

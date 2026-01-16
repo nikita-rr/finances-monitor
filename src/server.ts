@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import { budgetStorage } from './storage';
+import { updatePinnedMessageFromAPI } from './index';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -35,6 +36,11 @@ app.post('/api/budget', (req, res) => {
   const budgetPeriod = period || 30;
   const budget = budgetStorage.initBudget(amount, budgetPeriod);
   
+  // Update pinned message if exists
+  updatePinnedMessageFromAPI().catch(err => 
+    console.error('Failed to update pinned message:', err)
+  );
+  
   res.json({ success: true, budget });
 });
 
@@ -58,6 +64,11 @@ app.post('/api/transaction', (req, res) => {
     userName || 'User'
   );
   
+  // Update pinned message if exists
+  updatePinnedMessageFromAPI().catch(err => 
+    console.error('Failed to update pinned message:', err)
+  );
+  
   const updatedBudget = budgetStorage.getBudget();
   res.json({ success: true, budget: updatedBudget });
 });
@@ -65,6 +76,11 @@ app.post('/api/transaction', (req, res) => {
 // Reset transactions
 app.post('/api/budget/reset', (req, res) => {
   const count = budgetStorage.resetTransactions();
+  
+  // Update pinned message if exists
+  updatePinnedMessageFromAPI().catch(err => 
+    console.error('Failed to update pinned message:', err)
+  );
   
   res.json({ success: true, deletedCount: count });
 });
