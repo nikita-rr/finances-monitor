@@ -38,22 +38,23 @@ export function formatBudgetMessage(budget: BudgetData): string {
     }
   });
 
-  // Для расчета экономии сравниваем фактический остаток с плановым
-  const planedSpent = budget.monthlyBudget / budget.period * currentDay;
-  const planedRemaining = budget.monthlyBudget - planedSpent;
+  // Для расчета экономии используем только завершенные дни
+  const completedDays = currentDay - 1;
+  const planedSpentCompleted = budget.monthlyBudget / budget.period * completedDays;
+  const planedRemainingCompleted = budget.monthlyBudget - planedSpentCompleted;
   
-  // Экономия = фактический остаток - плановый остаток
-  const saved = remaining - planedRemaining;
+  // Экономия = фактический остаток - плановый остаток (по завершенным дням)
+  const saved = remaining - planedRemainingCompleted;
   let canSpendToday = dailyBudget + (saved > 0 ? saved : 0);
 
   let savedInfo = '';
-  if (saved > 0) {
+  if (saved > 0 && completedDays > 0) {
     savedInfo = `\n👌 *Сэкономлено:* ${saved.toFixed(2)} руб.`;
   } else if (saved < 0) {
     savedInfo = `\n⚠️ *Перерасход:* ${Math.abs(saved).toFixed(2)} руб.`;
   }
 
-  console.log({saved, remaining, canSpendToday, planedSpent, planedRemaining});
+  console.log({saved, remaining, canSpendToday, planedSpentCompleted, planedRemainingCompleted, completedDays});
   
 
   // Можно потратить сегодня = дневной лимит + сэкономленное ранее
