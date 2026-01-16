@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import { budgetStorage } from './storage';
-import { updatePinnedMessageFromAPI } from './index';
+import { updatePinnedMessageFromAPI } from './bot';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
