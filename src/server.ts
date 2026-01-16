@@ -80,8 +80,9 @@ app.get('*', (req, res) => {
 });
 
 // Start server
-app.listen(PORT, () => {
+app.listen(Number(PORT), '0.0.0.0', () => {
   console.log(`🚀 Mini App server running on http://localhost:${PORT}`);
+  console.log(`🌐 Server accessible on all network interfaces`);
   console.log(`📱 Open in Telegram: https://t.me/YOUR_BOT_USERNAME/app`);
 });
 
