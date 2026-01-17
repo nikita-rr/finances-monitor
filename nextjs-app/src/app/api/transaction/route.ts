@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { addTransaction, getBudget } from '@/lib/storage';
 import { calculateBudgetStats } from '@/lib/calculations';
-import { notifyBudgetUpdate } from '@/lib/telegram';
+import { notifyBudgetUpdate, notifyNewTransaction } from '@/lib/telegram';
 import { budgetEvents } from '@/lib/events';
 
 export async function POST(request: NextRequest) {
@@ -41,6 +41,8 @@ export async function POST(request: NextRequest) {
       }, { status: 500 });
     }
 
+    // Отправляем уведомление о новой транзакции в Telegram
+    await notifyNewTransaction(transaction.amount, transaction.description, transaction.userName);
     // Обновляем сообщение в Telegram
     await notifyBudgetUpdate();
 

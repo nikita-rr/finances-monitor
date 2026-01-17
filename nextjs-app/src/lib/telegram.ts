@@ -1,3 +1,20 @@
+// Отправка уведомления о новой транзакции в чат
+export async function notifyNewTransaction(amount: number, description: string, userName?: string) {
+  const budget = getBudget();
+  if (!budget || !budget.telegramChatId) return;
+  if (!bot) initBot();
+  if (!bot) return;
+  const isExpense = amount < 0;
+  const emoji = isExpense ? '➖' : '➕';
+  const absAmount = Math.abs(amount).toFixed(2);
+  const user = userName ? ` (${userName})` : '';
+  const msg = `${emoji} ${isExpense ? 'Расход' : 'Доход'}: ${absAmount} ₽\n${description}${user}`;
+  try {
+    await bot.telegram.sendMessage(budget.telegramChatId, msg);
+  } catch (e) {
+    console.error('Failed to send transaction notification:', e);
+  }
+}
 import { Telegraf, Context } from 'telegraf';
 import { Budget, BudgetCalculations } from '@/types';
 import { 
