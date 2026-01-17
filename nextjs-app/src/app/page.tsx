@@ -156,7 +156,7 @@ export default function Home() {
       try {
         const data = JSON.parse(event.data);
         
-        if (data.type === 'connected' || data.type === 'budget-update') {
+        if (data.type === 'connected' || data.type === 'update') {
           if (data.budget) {
             setBudget(data.budget);
             setCalculations(data.calculations);
