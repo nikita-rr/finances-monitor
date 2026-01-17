@@ -65,9 +65,9 @@
 }
 
 .expense {
-  color: #e53935;
+  color: var(--color-danger, #f43f5e);
 }
 
 .income {
-  color: #43a047;
+  color: var(--color-success, #10b981);
 }

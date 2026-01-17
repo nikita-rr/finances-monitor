@@ -32,11 +32,19 @@
 }
 
 .expense {
-  background: #ffebee;
-  color: #c62828;
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(185, 28, 28, 0.2);
 }
 
 .income {
-  background: #e8f5e9;
-  color: #2e7d32;
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(5, 150, 105, 0.2);
+}
+
+.icon {
+  font-size: 18px;
+  font-weight: 700;
+  margin-right: 4px;
 }

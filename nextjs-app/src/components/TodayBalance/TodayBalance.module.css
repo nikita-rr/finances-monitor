@@ -21,26 +21,27 @@
 }
 
 .positive {
-  color: #22c55e;
+  color: var(--color-success, #10b981);
 }
 
 .negative {
-  color: #ef4444;
+  color: var(--color-danger, #f43f5e);
 }
 
 .info, .warning {
   padding: 12px;
-  border-radius: 8px;
+  border-radius: 10px;
   margin-top: 12px;
   font-size: 14px;
+  font-weight: 500;
 }
 
 .info {
-  background: #e3f2fd;
-  color: #1565c0;
+  background: var(--color-info-light, #dbeafe);
+  color: var(--color-info-dark, #2563eb);
 }
 
 .warning {
-  background: #fff3e0;
-  color: #e65100;
+  background: var(--color-warning-light, #fef3c7);
+  color: var(--color-warning-dark, #d97706);
 }

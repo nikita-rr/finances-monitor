@@ -11,10 +11,10 @@ export default function ActionButtons({ onAddExpense, onAddIncome }: ActionButto
   return (
     <div className={styles.container}>
       <button className={`${styles.button} ${styles.expense}`} onClick={onAddExpense}>
-        ➖ Расход
+        <span className={styles.icon}>−</span> Расход
       </button>
       <button className={`${styles.button} ${styles.income}`} onClick={onAddIncome}>
-        ➕ Доход
+        <span className={styles.icon}>+</span> Доход
       </button>
     </div>
   );

@@ -116,19 +116,22 @@
 }
 
 .expenseBtn {
-  background: #e53935;
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
   color: #fff;
+  box-shadow: 0 4px 14px rgba(185, 28, 28, 0.2);
 }
 
 .incomeBtn {
-  background: #43a047;
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
   color: #fff;
+  box-shadow: 0 4px 14px rgba(5, 150, 105, 0.2);
 }
 
 .error {
-  background: #ffebee;
-  color: #c62828;
+  background: var(--color-danger-light, #ffe4e6);
+  color: var(--color-danger-dark, #e11d48);
   padding: 12px;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 14px;
+  font-weight: 500;
 }

@@ -112,21 +112,21 @@
 .statValueExpense {
   font-weight: 600;
   font-size: 14px;
-  color: #e53935;
+  color: var(--color-danger, #f43f5e);
 }
 
 .statValueIncome {
   font-weight: 600;
   font-size: 14px;
-  color: #43a047;
+  color: var(--color-success, #10b981);
 }
 
 .positive {
-  color: #43a047;
+  color: var(--color-success, #10b981);
 }
 
 .negative {
-  color: #e53935;
+  color: var(--color-danger, #f43f5e);
 }
 
 .transactionsList {
@@ -174,26 +174,28 @@
 }
 
 .expense {
-  color: #e53935;
+  color: var(--color-danger, #f43f5e);
 }
 
 .income {
-  color: #43a047;
+  color: var(--color-success, #10b981);
 }
 
 .emptyDay {
   margin-top: 16px;
   padding: 20px;
   text-align: center;
-  color: var(--tg-theme-hint-color, #999);
+  color: var(--tg-theme-hint-color, #6b7280);
   font-size: 14px;
+  background: var(--tg-theme-bg-color, #fafafa);
+  border-radius: 10px;
 }
 
 .plannedBadge {
-  background: #fff3e0;
-  color: #e65100;
+  background: var(--color-primary-light, #e0e7ff);
+  color: var(--color-primary-dark, #4f46e5);
   padding: 8px 12px;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 13px;
   font-weight: 600;
   text-align: center;
