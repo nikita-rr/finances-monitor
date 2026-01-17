@@ -47,6 +47,7 @@ function setupCommands(bot: Telegraf) {
       '/expense <сумма> [описание] - Добавить расход\n' +
       '/income <сумма> [описание] - Добавить доход\n' +
       '/transactions - Последние транзакции\n' +
+      '/refresh - Обновить/создать сообщение бюджета\n' +
       '/delete - Удалить бюджет\n' +
       '/undo - Отменить последнюю транзакцию\n\n' +
       `🌐 [Открыть приложение](${webAppUrl})`,
@@ -178,6 +179,46 @@ function setupCommands(bot: Telegraf) {
 
     deleteBudget();
     await ctx.reply('🗑️ Бюджет удален.');
+  });
+
+  // /refresh - обновить/создать сообщение бюджета
+  bot.command('refresh', async (ctx) => {
+    const budget = getBudget();
+    if (!budget) {
+      await ctx.reply('❌ Бюджет не установлен. Создайте его командой /budget <сумма> [дни]');
+      return;
+    }
+
+    const stats = calculateBudgetStats(budget);
+    const messageText = generateBudgetMessage(budget, stats);
+
+    // Если уже есть сообщение - пробуем обновить
+    if (budget.telegramMessageId && budget.telegramChatId) {
+      try {
+        await ctx.telegram.editMessageText(
+          budget.telegramChatId,
+          budget.telegramMessageId,
+          undefined,
+          messageText,
+          { parse_mode: 'Markdown' }
+        );
+        await ctx.reply(`✅ Сообщение бюджета обновлено (ID: ${budget.id})`);
+        return;
+      } catch (error) {
+        // Если не удалось обновить - создадим новое
+        console.log('Could not update message, creating new one:', error);
+      }
+    }
+
+    // Создаём новое сообщение
+    const sentMessage = await ctx.reply(messageText, { parse_mode: 'Markdown' });
+    
+    // Сохраняем chatId и messageId для будущих обновлений
+    budget.telegramChatId = ctx.chat.id;
+    budget.telegramMessageId = sentMessage.message_id;
+    updateBudget(budget);
+
+    await ctx.reply(`✅ Сообщение бюджета создано (ID: ${budget.id})\nТеперь оно будет автоматически обновляться.`);
   });
 
   // /undo - отменить последнюю транзакцию
