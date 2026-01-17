@@ -107,6 +107,43 @@ submitTransactionBtn.addEventListener("click", submitTransaction);
 loadBudget();
 setupRealtimeUpdates();
 
+// Auto-update UI when date changes
+let lastRenderedDate = new Date().toDateString();
+
+// Check every 30 seconds if date has changed
+const dayChangeCheckInterval = setInterval(() => {
+  const currentDate = new Date().toDateString();
+  if (currentDate !== lastRenderedDate && budget) {
+    console.log(`[${new Date().toLocaleTimeString()}] Day changed from ${lastRenderedDate} to ${currentDate}, updating UI`);
+    lastRenderedDate = currentDate;
+    renderBudgetStatus();
+    renderTransactions();
+  }
+}, 30000); // Check every 30 seconds
+
+// Also schedule precise update at midnight
+function scheduleNextMidnightUpdate() {
+  const now = new Date();
+  const tomorrow = new Date(now);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  tomorrow.setHours(0, 0, 0, 100); // 100ms after midnight
+  
+  const timeUntilMidnight = tomorrow.getTime() - now.getTime();
+  console.log(`[${new Date().toLocaleTimeString()}] Next midnight update scheduled in ${(timeUntilMidnight / 1000 / 60).toFixed(1)} minutes`);
+  
+  setTimeout(() => {
+    if (budget) {
+      console.log(`[${new Date().toLocaleTimeString()}] Midnight update triggered`);
+      lastRenderedDate = new Date().toDateString();
+      renderBudgetStatus();
+      renderTransactions();
+    }
+    scheduleNextMidnightUpdate();
+  }, timeUntilMidnight);
+}
+
+scheduleNextMidnightUpdate();
+
 // Functions
 async function loadBudget() {
   try {
@@ -138,6 +175,9 @@ async function loadBudget() {
 function renderBudgetStatus() {
   if (!budget) return;
 
+  // Update the last rendered date when we re-render
+  lastRenderedDate = new Date().toDateString();
+
   const period = budget.period || 30;
   const total = budget.transactions.reduce((sum, t) => sum + t.amount, 0);
   const remaining = budget.monthlyBudget + total;
@@ -161,10 +201,16 @@ function renderBudgetStatus() {
   const remainingWithoutToday = remaining - todayNet;
   const dailyBudget = remainingWithoutToday / period;
 
-  // Calculate days passed
+  // Calculate days passed (using calendar days, not time-based)
   const createdDate = new Date(budget.createdDate);
+  const createdDateOnly = new Date(createdDate);
+  createdDateOnly.setHours(0, 0, 0, 0);
+  
+  const todayDateOnly = new Date(now);
+  todayDateOnly.setHours(0, 0, 0, 0);
+  
   const daysPassed =
-    Math.floor((now - createdDate) / (1000 * 60 * 60 * 24)) + 1;
+    Math.floor((todayDateOnly - createdDateOnly) / (1000 * 60 * 60 * 24)) + 1;
   const currentDay = Math.min(daysPassed, period);
 
   // Calculate savings
@@ -190,9 +236,8 @@ function renderBudgetStatus() {
   let warningHtml = "";
   let savedHtml = "";
 
-  // Check overspend today
-  const netSpendToday = todayNet < 0 ? Math.abs(todayNet) : 0;
-  const overspendToday = netSpendToday - dailyBudget;
+  // Check overspend today - based on absolute expenses, not net spend
+  const overspendToday = Math.max(0, todayExpenses - dailyBudget);
 
   if (overspendToday > 0) {
     warningHtml += `<div class="warning">⚠️ Перерасход сегодня на: ${overspendToday.toFixed(
@@ -235,6 +280,10 @@ function renderBudgetStatus() {
 
   statusCard.innerHTML = `
         <div class="status-content">
+            <div class="status-row">
+                <span class="status-label">📅 Дата создания:</span>
+                <span class="status-value">${new Date(budget.createdDate).toLocaleDateString("ru-RU")}</span>
+            </div>
             <div class="status-row">
                 <span class="status-label">📅 Период:</span>
                 <span class="status-value">${currentDay}/${period}</span>

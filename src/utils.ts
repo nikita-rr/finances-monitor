@@ -19,9 +19,17 @@ export function formatBudgetMessage(budget: BudgetData): string {
 
   const now = new Date();
   const createdDate = new Date(budget.createdDate);
+  
+  // Calculate days passed using calendar days, not time-based
+  const createdDateOnly = new Date(createdDate);
+  createdDateOnly.setHours(0, 0, 0, 0);
+  
+  const todayDateOnly = new Date(now);
+  todayDateOnly.setHours(0, 0, 0, 0);
+  
   const daysPassed =
     Math.floor(
-      (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24)
+      (todayDateOnly.getTime() - createdDateOnly.getTime()) / (1000 * 60 * 60 * 24)
     ) + 1;
   const currentDay = Math.min(daysPassed, period);
   
@@ -74,10 +82,9 @@ export function formatBudgetMessage(budget: BudgetData): string {
 
   // Можно потратить сегодня = дневной лимит + сэкономленное ранее
 
-  // Предупреждение при превышении лимита (учитываем чистые траты за сегодня)
+  // Предупреждение при превышении лимита (считаем от базового дневного лимита)
   let warning = '';
-  const netSpendToday = todayNet < 0 ? Math.abs(todayNet) : 0; // расходы минус доходы за сегодня
-  const overspendToday = netSpendToday - dailyBudget;
+  const overspendToday = Math.max(0, todayExpenses - dailyBudget); // перерасход от дневного лимита
   
   // Рассчитываем влияние на будущий дневной лимит
   const daysLeft = period - currentDay;
