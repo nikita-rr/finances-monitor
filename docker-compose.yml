@@ -1,27 +1,19 @@
 services:
-  web:
-    build: .
-    container_name: tg-finance-miniapp
+  app:
+    build: ./nextjs-app
+    container_name: tg-finance-nextjs
     restart: unless-stopped
     environment:
       - NODE_ENV=production
-      - PORT=3000
       - BOT_TOKEN=${BOT_TOKEN}
+      - WEBAPP_URL=${WEBAPP_URL}
+      - DATA_FILE=/app/data/data.json
     ports:
       - "80:3000"
     volumes:
-      - ./data.json:/app/data.json
-    command: ["node", "dist/server.js"]
-
-  bot:
-    build: .
-    container_name: tg-finance-bot
-    restart: unless-stopped
-    environment:
-      - NODE_ENV=production
-      - BOT_TOKEN=${BOT_TOKEN}
-    # Mount data.json to share state with web (optional, same file)
-    volumes:
-      - ./data.json:/app/data.json
-    # No ports needed for bot
-    command: ["node", "dist/index.js"]
+      - ./data:/app/data
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

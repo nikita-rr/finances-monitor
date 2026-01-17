@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getBudget, createBudget } from '@/lib/storage';
 import { calculateBudgetStats } from '@/lib/calculations';
-import { notifyBudgetUpdate } from '@/lib/telegram';
 
 export async function GET() {
   const budget = getBudget();
