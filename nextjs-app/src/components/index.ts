@@ -4,3 +4,4 @@ export { default as TransactionList } from './TransactionList/TransactionList';
 export { default as TransactionModal } from './TransactionModal/TransactionModal';
 export { default as ActionButtons } from './ActionButtons/ActionButtons';
 export { default as DayNavigator } from './DayNavigator/DayNavigator';
+export { default as TodayBalance } from './TodayBalance/TodayBalance';

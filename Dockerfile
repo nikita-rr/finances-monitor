@@ -2,17 +2,14 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-# Install build deps
+# Install dependencies
 COPY package.json package-lock.json* ./
 RUN npm ci
 
 # Copy sources
-COPY tsconfig.json ./
-COPY src ./src
-COPY public ./public
-COPY data.json ./data.json
+COPY . .
 
-# Build TypeScript
+# Build Next.js
 RUN npm run build
 
 # --- Runtime stage ---
@@ -21,17 +18,24 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
-# Copy only runtime files
-COPY package.json package-lock.json* ./
-RUN npm ci --omit=dev
+# Create app user
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
 
-COPY --from=builder /app/dist ./dist
+# Copy standalone build
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
-# Copy initial data file (can be overridden via volume)
-COPY --from=builder /app/data.json ./data.json
 
-# Expose Mini App HTTP port
+# Create data directory
+RUN mkdir -p /app/data && chown -R nextjs:nodejs /app/data
+
+USER nextjs
+
+# Expose Next.js port
 EXPOSE 3000
 
-# Default command runs the Mini App server. For bot, override in compose.
-CMD ["node", "dist/server.js"]
+ENV PORT 3000
+ENV HOSTNAME "0.0.0.0"
+
+CMD ["node", "server.js"]

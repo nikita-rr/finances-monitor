@@ -29,15 +29,15 @@ export default function TransactionList({ transactions }: TransactionListProps) 
     );
   }
 
-  // Show last 10 transactions, newest first
-  const recentTransactions = [...transactions].slice(-10).reverse();
+  // Show all transactions, newest first
+  const sortedTransactions = [...transactions].reverse();
 
   return (
     <div className={styles.container}>
-      <h3 className={styles.title}>📝 Последние транзакции</h3>
+      <h3 className={styles.title}>📝 Все транзакции</h3>
       
       <div className={styles.list}>
-        {recentTransactions.map((t) => {
+        {sortedTransactions.map((t) => {
           const isExpense = t.amount < 0;
           
           return (

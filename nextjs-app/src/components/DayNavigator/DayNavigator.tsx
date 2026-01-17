@@ -8,7 +8,7 @@ interface DayNavigatorProps {
   createdDate: string;
   periodDays: number;
   transactions: Transaction[];
-  dailyBudget: number;
+  totalBudget: number;
   plannedDailyBudget: number;
 }
 
@@ -28,7 +28,7 @@ export default function DayNavigator({
   createdDate, 
   periodDays, 
   transactions,
-  dailyBudget,
+  totalBudget,
   plannedDailyBudget
 }: DayNavigatorProps) {
   const today = new Date();
@@ -67,9 +67,32 @@ export default function DayNavigator({
     .filter(t => t.amount > 0)
     .reduce((sum, t) => sum + t.amount, 0);
   
-  // For future days use planned budget, for past/today use actual
-  const effectiveDailyBudget = isFutureDay ? plannedDailyBudget : dailyBudget;
-  const dayBalance = effectiveDailyBudget - dayExpenses + dayIncome;
+  // Calculate starting day limit - what the daily budget was at the START of this day
+  // This is: (remaining budget at start of day) / (remaining days including this day)
+  const calculateStartingDayLimit = () => {
+    if (isFutureDay) {
+      return plannedDailyBudget;
+    }
+    
+    // Get all transactions BEFORE this day (not including this day's transactions)
+    const transactionsBeforeThisDay = transactions.filter(t => {
+      const tDate = new Date(t.date);
+      tDate.setHours(0, 0, 0, 0);
+      return tDate.getTime() < selectedDate.getTime();
+    });
+    
+    // Calculate remaining budget at the start of selected day
+    const spentBeforeThisDay = transactionsBeforeThisDay.reduce((sum, t) => sum + t.amount, 0);
+    const remainingAtDayStart = totalBudget + spentBeforeThisDay; // t.amount is negative for expenses
+    
+    // Calculate remaining days at the start of this day (including this day)
+    const remainingDaysAtStart = periodDays - selectedDayNum + 1;
+    
+    return remainingAtDayStart / remainingDaysAtStart;
+  };
+  
+  const startingDayLimit = calculateStartingDayLimit();
+  const dayBalance = startingDayLimit - dayExpenses + dayIncome;
   
   // Navigation limits - can navigate all days in period (1 to periodDays)
   const canGoBack = selectedDayNum > 1;
@@ -135,7 +158,7 @@ export default function DayNavigator({
           <span className={styles.statLabel}>
             {isFutureDay ? 'Плановый лимит:' : 'Лимит на день:'}
           </span>
-          <span className={styles.statValue}>{formatCurrency(effectiveDailyBudget)}</span>
+          <span className={styles.statValue}>{formatCurrency(startingDayLimit)}</span>
         </div>
         {!isFutureDay && (
           <>

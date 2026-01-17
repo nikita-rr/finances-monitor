@@ -8,7 +8,8 @@ import {
   TransactionList, 
   TransactionModal,
   ActionButtons,
-  DayNavigator
+  DayNavigator,
+  TodayBalance
 } from '@/components';
 import styles from './page.module.css';
 
@@ -196,11 +197,13 @@ export default function Home() {
         
         {budget && calculations ? (
           <>
+            <TodayBalance calculations={calculations} />
+            
             <DayNavigator
               createdDate={budget.createdDate}
               periodDays={budget.periodDays}
               transactions={budget.transactions}
-              dailyBudget={calculations.actualDailyBudget}
+              totalBudget={budget.totalBudget}
               plannedDailyBudget={calculations.plannedDailyBudget}
             />
             

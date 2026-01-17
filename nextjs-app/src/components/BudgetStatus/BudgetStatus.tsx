@@ -66,37 +66,6 @@ export default function BudgetStatus({ calculations, createdDate }: BudgetStatus
           <span className={styles.valueIncome}>+{formatCurrency(stats.totalIncome)}</span>
         </div>
 
-        <div className={styles.divider} />
-        
-        <div className={styles.todaySection}>
-          <div className={styles.todayLabel}>📅 Баланс сегодня:</div>
-          <div className={`${styles.todayValue} ${stats.todayBalance >= 0 ? styles.positive : styles.negative}`}>
-            {stats.todayBalance >= 0 ? '+' : ''}{formatCurrency(stats.todayBalance)}
-          </div>
-          
-          {/* Предупреждение о перерасходе сегодня - только при отрицательном балансе */}
-          {stats.todayBalance < 0 && (
-            <div className={styles.warning}>
-              ⚠️ Перерасход сегодня: {formatCurrency(Math.abs(stats.todayBalance))}
-            </div>
-          )}
-
-          {/* Прогноз на завтра */}
-          {stats.remainingDays > 1 && (
-            <div className={stats.todayBalance < 0 ? styles.warning : styles.info}>
-              {stats.todayBalance < 0 ? (
-                <>
-                  📉 Завтра лимит уменьшится до: {formatCurrency(stats.tomorrowDailyBudget)}
-                </>
-              ) : (
-                <>
-                  📈 Если не тратить сегодня, завтра лимит будет: {formatCurrency(stats.tomorrowDailyBudget)}
-                </>
-              )}
-            </div>
-          )}
-        </div>
-
         {/* Итоговая экономия/перерасход за весь период */}
         {stats.saved > 0 && stats.todayBalance >= 0 && (
           <div className={styles.info}>

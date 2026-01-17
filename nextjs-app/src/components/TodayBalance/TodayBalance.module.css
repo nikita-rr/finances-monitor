@@ -1,0 +1,46 @@
+.container {
+  margin-bottom: 16px;
+}
+
+.todaySection {
+  background: var(--tg-theme-secondary-bg-color, #f4f4f5);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+}
+
+.todayLabel {
+  font-size: 14px;
+  color: var(--tg-theme-hint-color, #999);
+  margin-bottom: 8px;
+}
+
+.todayValue {
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.positive {
+  color: #22c55e;
+}
+
+.negative {
+  color: #ef4444;
+}
+
+.info, .warning {
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 12px;
+  font-size: 14px;
+}
+
+.info {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.warning {
+  background: #fff3e0;
+  color: #e65100;
+}
