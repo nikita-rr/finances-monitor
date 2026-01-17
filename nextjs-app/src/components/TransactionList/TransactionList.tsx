@@ -48,6 +48,13 @@ export default function TransactionList({ transactions }: TransactionListProps) 
                 {t.userName && (
                   <div className={styles.user}>👤 {t.userName}</div>
                 )}
+                {t.receiptFiles && t.receiptFiles.length > 0 && (
+                  <div style={{ marginTop: 8, display: 'flex', gap: 8 }}>
+                    {t.receiptFiles.map((f) => (
+                      <img key={f} src={`/api/receipt/${f}`} alt="Чек" style={{ width: 56, height: 56, objectFit: 'cover', borderRadius: 8 }} />
+                    ))}
+                  </div>
+                )}
               </div>
               <div className={`${styles.amount} ${isExpense ? styles.expense : styles.income}`}>
                 {isExpense ? '-' : '+'}{formatCurrency(t.amount)}

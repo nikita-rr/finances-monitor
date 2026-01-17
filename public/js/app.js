@@ -368,7 +368,7 @@ function renderTransactions() {
 function openTransactionModal(type) {
   currentTransactionType = type;
   modalTitle.textContent =
-    type === "expense" ? "➖ Добавить расход" : "➕ Добавить доход";
+    type === "expense" ? "- Добавить расход" : "+ Добавить доход";
   transactionModal.classList.add("active");
   document.getElementById("transactionAmount").value = "";
   document.getElementById("transactionDescription").value = "";

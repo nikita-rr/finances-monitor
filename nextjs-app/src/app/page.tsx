@@ -147,20 +147,27 @@ export default function Home() {
   };
 
   // Add transaction handler
-  const handleAddTransaction = async (amount: number, description: string) => {
+  const handleAddTransaction = async (amount: number, description: string, receiptBase64s?: string[], receiptNames?: string[]) => {
     const finalAmount = transactionType === 'expense' ? -amount : amount;
     const userId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
     const userName = window.Telegram?.WebApp?.initDataUnsafe?.user?.first_name;
 
+    const body: any = {
+      amount: finalAmount,
+      description,
+      userId,
+      userName,
+    };
+
+    if (receiptBase64s && receiptBase64s.length > 0) {
+      body.receiptBase64s = receiptBase64s;
+      body.receiptOriginalNames = receiptNames;
+    }
+
     const response = await fetch('/api/transaction', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        amount: finalAmount, 
-        description,
-        userId,
-        userName
-      }),
+      body: JSON.stringify(body),
     });
     
     const data = await response.json();

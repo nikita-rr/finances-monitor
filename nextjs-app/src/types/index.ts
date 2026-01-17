@@ -7,6 +7,7 @@ export interface Transaction {
   date: string; // ISO date string
   userId?: number;
   userName?: string;
+  receiptFiles?: string[]; // optional filenames for uploaded receipts
 }
 
 export interface Budget {

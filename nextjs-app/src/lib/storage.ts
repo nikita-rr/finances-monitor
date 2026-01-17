@@ -56,7 +56,9 @@ export function addTransaction(
   amount: number,
   description: string,
   userId?: number,
-  userName?: string
+  userName?: string,
+  receiptBase64s?: string[],
+  receiptOriginalNames?: string[]
 ): Transaction | null {
   const data = readData();
   if (!data.budget) {
@@ -71,6 +73,42 @@ export function addTransaction(
     userId,
     userName,
   };
+  // If receipts provided (base64 array), save them to data/uploads and record filenames
+  if (receiptBase64s && receiptBase64s.length > 0) {
+    try {
+      const dataDir = path.dirname(DATA_FILE);
+      const uploadsDir = path.join(dataDir, 'uploads');
+      if (!fs.existsSync(uploadsDir)) {
+        fs.mkdirSync(uploadsDir, { recursive: true });
+      }
+
+      const savedFiles: string[] = [];
+
+      for (let i = 0; i < receiptBase64s.length; i++) {
+        const receiptBase64 = receiptBase64s[i];
+        const receiptOriginalName = receiptOriginalNames && receiptOriginalNames[i] ? receiptOriginalNames[i] : undefined;
+
+        // Determine extension from original name if present
+        let ext = '.png';
+        if (receiptOriginalName) {
+          const parsed = path.parse(receiptOriginalName);
+          if (parsed.ext) ext = parsed.ext;
+        }
+
+        const fileName = `${uuidv4()}${ext}`;
+        const filePath = path.join(uploadsDir, fileName);
+
+        const base64Data = receiptBase64.replace(/^data:.+;base64,/, '');
+        fs.writeFileSync(filePath, base64Data, 'base64');
+
+        savedFiles.push(fileName);
+      }
+
+      (transaction as any).receiptFiles = savedFiles;
+    } catch (err) {
+      console.error('Error saving receipt files:', err);
+    }
+  }
 
   data.budget.transactions.push(transaction);
   writeData(data);

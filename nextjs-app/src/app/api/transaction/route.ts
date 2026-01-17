@@ -6,7 +6,7 @@ import { notifyBudgetUpdate } from '@/lib/telegram';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { amount, description = 'Без описания', userId, userName } = body;
+    const { amount, description = 'Без описания', userId, userName, receiptBase64, receiptOriginalName, receiptBase64s, receiptOriginalNames } = body;
 
     if (amount === undefined || amount === 0) {
       return NextResponse.json({
@@ -23,7 +23,15 @@ export async function POST(request: NextRequest) {
       }, { status: 404 });
     }
 
-    const transaction = addTransaction(amount, description, userId, userName);
+    // Support both single and multiple receipts from client
+    let transaction;
+    if (Array.isArray(receiptBase64s) && receiptBase64s.length > 0) {
+      transaction = addTransaction(amount, description, userId, userName, receiptBase64s, receiptOriginalNames);
+    } else if (receiptBase64) {
+      transaction = addTransaction(amount, description, userId, userName, [receiptBase64], receiptOriginalName ? [receiptOriginalName] : undefined);
+    } else {
+      transaction = addTransaction(amount, description, userId, userName);
+    }
     
     if (!transaction) {
       return NextResponse.json({

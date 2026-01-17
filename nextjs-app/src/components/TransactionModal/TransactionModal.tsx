@@ -3,11 +3,17 @@
 import { useState } from 'react';
 import styles from './TransactionModal.module.css';
 
+interface SelectedFile {
+  file: File;
+  preview: string;
+  status: 'ready' | 'uploading';
+}
+
 interface TransactionModalProps {
   isOpen: boolean;
   type: 'expense' | 'income';
   onClose: () => void;
-  onSubmit: (amount: number, description: string) => Promise<void>;
+  onSubmit: (amount: number, description: string, receiptBase64s?: string[], receiptNames?: string[]) => Promise<void>;
 }
 
 export default function TransactionModal({ 
@@ -20,6 +26,7 @@ export default function TransactionModal({
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [selectedFiles, setSelectedFiles] = useState<SelectedFile[]>([]);
 
   if (!isOpen) return null;
 
@@ -35,9 +42,29 @@ export default function TransactionModal({
 
     try {
       setLoading(true);
-      await onSubmit(amountNum, description || 'Без описания');
+
+      // convert selected files to base64 array
+      const base64s: string[] = [];
+      const names: string[] = [];
+
+      // set statuses to uploading
+      setSelectedFiles((prev) => prev.map((p) => ({ ...p, status: 'uploading' })));
+
+      for (const sf of selectedFiles) {
+        const b64 = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result));
+          reader.onerror = (err) => reject(err);
+          reader.readAsDataURL(sf.file);
+        });
+        base64s.push(b64);
+        names.push(sf.file.name);
+      }
+
+      await onSubmit(amountNum, description || 'Без описания', base64s.length ? base64s : undefined, names.length ? names : undefined);
       setAmount('');
       setDescription('');
+      setSelectedFiles([]);
       onClose();
     } catch (err) {
       setError('Ошибка при добавлении транзакции');
@@ -57,7 +84,7 @@ export default function TransactionModal({
       <div className={styles.modal}>
         <div className={styles.header}>
           <h2 className={styles.title}>
-            {type === 'expense' ? '➖ Добавить расход' : '➕ Добавить доход'}
+            {type === 'expense' ? '- Добавить расход' : '+ Добавить доход'}
           </h2>
           <button className={styles.closeBtn} onClick={onClose}>×</button>
         </div>
@@ -88,6 +115,42 @@ export default function TransactionModal({
             />
           </div>
 
+          <div className={styles.field}>
+            <label className={styles.label}>Чеки (опционально)</label>
+            <div className={styles.uploadRow}>
+              <label className={styles.uploadBtn}>
+                Загрузить фото
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={(e) => {
+                    const files = e.target.files ? Array.from(e.target.files) : [];
+                    const newSelected = files.map((f) => ({ file: f, preview: URL.createObjectURL(f), status: 'ready' as const }));
+                    setSelectedFiles((prev) => [...prev, ...newSelected]);
+                    // reset input
+                    e.currentTarget.value = '';
+                  }}
+                  style={{ display: 'none' }}
+                />
+              </label>
+
+              <div className={styles.thumbs}>
+                {selectedFiles.map((sf, idx) => (
+                  <div key={idx} className={styles.thumb}>
+                    <img src={sf.preview} alt={`preview-${idx}`} />
+                    <div className={styles.badge}>{sf.status === 'ready' ? 'Готово' : 'Загрузка...'}</div>
+                    <button type="button" className={styles.removeBtn} onClick={() => {
+                      // revoke url
+                      URL.revokeObjectURL(sf.preview);
+                      setSelectedFiles((prev) => prev.filter((_, i) => i !== idx));
+                    }}>×</button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
           {error && <div className={styles.error}>{error}</div>}
 
           <button 
@@ -95,7 +158,7 @@ export default function TransactionModal({
             className={`${styles.button} ${type === 'expense' ? styles.expenseBtn : styles.incomeBtn}`}
             disabled={loading}
           >
-            {loading ? 'Добавление...' : (type === 'expense' ? '➖ Добавить расход' : '➕ Добавить доход')}
+            {loading ? 'Добавление...' : (type === 'expense' ? '- Добавить расход' : '+ Добавить доход')}
           </button>
         </form>
       </div>
