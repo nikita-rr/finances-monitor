@@ -52,21 +52,54 @@ export default function Home() {
 
   // Initialize Telegram WebApp
   useEffect(() => {
+    const root = document.documentElement;
+    
     if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
       const tg = window.Telegram.WebApp;
       tg.ready();
       tg.expand();
 
-      // Apply theme
-      const root = document.documentElement;
-      root.style.setProperty('--tg-theme-bg-color', tg.themeParams.bg_color || '#ffffff');
+      // Apply theme from Telegram
+      const bgColor = tg.themeParams.bg_color || '#ffffff';
+      root.style.setProperty('--tg-theme-bg-color', bgColor);
       root.style.setProperty('--tg-theme-text-color', tg.themeParams.text_color || '#000000');
       root.style.setProperty('--tg-theme-hint-color', tg.themeParams.hint_color || '#999999');
       root.style.setProperty('--tg-theme-button-color', tg.themeParams.button_color || '#2481cc');
       root.style.setProperty('--tg-theme-button-text-color', tg.themeParams.button_text_color || '#ffffff');
       root.style.setProperty('--tg-theme-secondary-bg-color', tg.themeParams.secondary_bg_color || '#f4f4f5');
+      
+      // Detect if Telegram is using dark theme by checking bg_color luminance
+      const isDark = isDarkColor(bgColor);
+      if (isDark) {
+        root.classList.add('dark');
+        root.classList.remove('light');
+      } else {
+        root.classList.add('light');
+        root.classList.remove('dark');
+      }
     }
   }, []);
+  
+  // Helper function to detect if a color is dark
+  function isDarkColor(color: string): boolean {
+    // Convert hex to RGB
+    let r = 0, g = 0, b = 0;
+    if (color.startsWith('#')) {
+      const hex = color.slice(1);
+      if (hex.length === 3) {
+        r = parseInt(hex[0] + hex[0], 16);
+        g = parseInt(hex[1] + hex[1], 16);
+        b = parseInt(hex[2] + hex[2], 16);
+      } else if (hex.length === 6) {
+        r = parseInt(hex.slice(0, 2), 16);
+        g = parseInt(hex.slice(2, 4), 16);
+        b = parseInt(hex.slice(4, 6), 16);
+      }
+    }
+    // Calculate luminance
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    return luminance < 0.5;
+  }
 
   // Load budget data
   const loadBudget = useCallback(async () => {
