@@ -20,6 +20,7 @@ declare global {
       WebApp: {
         ready: () => void;
         expand: () => void;
+        initData: string;
         themeParams: {
           bg_color?: string;
           text_color?: string;
