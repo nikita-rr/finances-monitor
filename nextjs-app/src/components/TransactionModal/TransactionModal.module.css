@@ -27,11 +27,14 @@
   border-radius: 24px 24px 0 0;
   width: 100%;
   max-width: 500px;
-  padding: 24px;
+  padding: 0;
   padding-bottom: 48px; /* увеличенный отступ снизу для клавиатуры */
   animation: slideUp 0.3s ease-out;
   box-shadow: var(--shadow-lg);
   min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
 }
 
 @keyframes slideUp {
@@ -44,10 +47,16 @@
 }
 
 .header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--surface-elevated, #fff);
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  padding: 24px 24px 0 24px;
+  border-radius: 24px 24px 0 0;
 }
 
 .title {
@@ -79,9 +88,12 @@
 }
 
 .form {
+  flex: 1 1 auto;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  padding: 0 24px 0 24px;
 }
 
 .field {
