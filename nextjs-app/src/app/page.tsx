@@ -54,8 +54,11 @@ export default function Home() {
   useEffect(() => {
     const root = document.documentElement;
     
-    if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
-      const tg = window.Telegram.WebApp;
+    // Check if we're actually inside Telegram (not just script loaded)
+    const tg = typeof window !== 'undefined' ? window.Telegram?.WebApp : null;
+    const isInTelegram = tg && tg.initData && tg.initData.length > 0;
+    
+    if (isInTelegram) {
       tg.ready();
       tg.expand();
 
@@ -78,7 +81,7 @@ export default function Home() {
         root.classList.remove('dark');
       }
     } else {
-      // No Telegram - use browser's preferred color scheme
+      // Not in Telegram - use browser's preferred color scheme
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       if (prefersDark) {
         root.classList.add('dark');
