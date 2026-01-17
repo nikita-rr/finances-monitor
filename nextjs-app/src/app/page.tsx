@@ -7,7 +7,8 @@ import {
   CreateBudget, 
   TransactionList, 
   TransactionModal,
-  ActionButtons 
+  ActionButtons,
+  DayNavigator
 } from '@/components';
 import styles from './page.module.css';
 
@@ -195,17 +196,25 @@ export default function Home() {
         
         {budget && calculations ? (
           <>
+            <DayNavigator
+              createdDate={budget.createdDate}
+              periodDays={budget.periodDays}
+              transactions={budget.transactions}
+              dailyBudget={calculations.actualDailyBudget}
+              plannedDailyBudget={calculations.plannedDailyBudget}
+            />
+            
             <BudgetStatus 
               calculations={calculations} 
               createdDate={budget.createdDate} 
             />
             
+            <TransactionList transactions={budget.transactions} />
+            
             <ActionButtons 
               onAddExpense={() => openModal('expense')}
               onAddIncome={() => openModal('income')}
             />
-            
-            <TransactionList transactions={budget.transactions} />
             
             <TransactionModal
               isOpen={modalOpen}

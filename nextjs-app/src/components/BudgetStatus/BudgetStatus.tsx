@@ -93,7 +93,7 @@ export default function BudgetStatus({ calculations, createdDate }: BudgetStatus
               </>
             ) : (
               <>
-                📈 Завтра лимит увеличится на: {formatCurrency(stats.dailyBudgetChange)}
+                📈 Если не потратить, завтра лимит увеличится на: {formatCurrency(stats.dailyBudgetChange)}
                 <br />
                 <small>(будет {formatCurrency(stats.tomorrowDailyBudget)})</small>
               </>
