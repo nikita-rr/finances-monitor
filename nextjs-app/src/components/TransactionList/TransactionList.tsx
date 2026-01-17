@@ -8,7 +8,7 @@ interface TransactionListProps {
 }
 
 function formatCurrency(amount: number): string {
-  return Math.abs(amount).toFixed(2) + ' ₽';
+  return Math.abs(amount).toFixed(2) + '\u00A0₽';
 }
 
 function formatDate(dateString: string): string {
