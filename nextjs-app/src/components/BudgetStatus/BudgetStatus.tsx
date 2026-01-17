@@ -73,33 +73,33 @@ export default function BudgetStatus({ calculations, createdDate }: BudgetStatus
           <div className={`${styles.todayValue} ${stats.todayBalance >= 0 ? styles.positive : styles.negative}`}>
             {stats.todayBalance >= 0 ? '+' : ''}{formatCurrency(stats.todayBalance)}
           </div>
+          
+          {/* Предупреждения */}
+          {stats.overspendToday > 0 && (
+            <div className={styles.warning}>
+              ⚠️ Перерасход сегодня: {formatCurrency(stats.overspendToday)}
+            </div>
+          )}
+
+          {/* Прогноз на завтра */}
+          {stats.dailyBudgetChange !== 0 && stats.remainingDays > 1 && (
+            <div className={stats.dailyBudgetChange < 0 ? styles.warning : styles.info}>
+              {stats.dailyBudgetChange < 0 ? (
+                <>
+                  📉 Завтра лимит уменьшится на: {formatCurrency(Math.abs(stats.dailyBudgetChange))}
+                  <br />
+                  <small>(будет {formatCurrency(stats.tomorrowDailyBudget)})</small>
+                </>
+              ) : (
+                <>
+                  📈 Если не потратить, завтра лимит увеличится на: {formatCurrency(stats.dailyBudgetChange)}
+                  <br />
+                  <small>(будет {formatCurrency(stats.tomorrowDailyBudget)})</small>
+                </>
+              )}
+            </div>
+          )}
         </div>
-
-        {/* Предупреждения */}
-        {stats.overspendToday > 0 && (
-          <div className={styles.warning}>
-            ⚠️ Перерасход сегодня: {formatCurrency(stats.overspendToday)}
-          </div>
-        )}
-
-        {/* Прогноз на завтра */}
-        {stats.dailyBudgetChange !== 0 && stats.remainingDays > 1 && (
-          <div className={stats.dailyBudgetChange < 0 ? styles.warning : styles.info}>
-            {stats.dailyBudgetChange < 0 ? (
-              <>
-                📉 Завтра лимит уменьшится на: {formatCurrency(Math.abs(stats.dailyBudgetChange))}
-                <br />
-                <small>(будет {formatCurrency(stats.tomorrowDailyBudget)})</small>
-              </>
-            ) : (
-              <>
-                📈 Если не потратить, завтра лимит увеличится на: {formatCurrency(stats.dailyBudgetChange)}
-                <br />
-                <small>(будет {formatCurrency(stats.tomorrowDailyBudget)})</small>
-              </>
-            )}
-          </div>
-        )}
 
         {/* Сбережения */}
         {stats.saved > 0 && (
