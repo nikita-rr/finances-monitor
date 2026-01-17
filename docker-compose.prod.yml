@@ -1,28 +1,15 @@
 services:
-  web:
-    build: .
-    container_name: tg-finance-miniapp
-    restart: unless-stopped
-    environment:
-      - NODE_ENV=production
-      - PORT=3000
-      - BOT_TOKEN=${BOT_TOKEN}
-    volumes:
-      - ./data.json:/app/data.json
-    command: ["node", "dist/server.js"]
-    networks:
-      - app-network
-
-  bot:
-    build: .
-    container_name: tg-finance-bot
+  app:
+    build: ./nextjs-app
+    container_name: tg-finance-nextjs
     restart: unless-stopped
     environment:
       - NODE_ENV=production
       - BOT_TOKEN=${BOT_TOKEN}
+      - WEBAPP_URL=${WEBAPP_URL}
+      - DATA_FILE=/app/data/data.json
     volumes:
-      - ./data.json:/app/data.json
-    command: ["node", "dist/index.js"]
+      - ./data:/app/data
     networks:
       - app-network
 
