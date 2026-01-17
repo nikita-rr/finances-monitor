@@ -51,9 +51,6 @@ export function calculateBudgetStats(budget: Budget): BudgetCalculations {
   // Planned daily budget (fixed)
   const plannedDailyBudget = budget.totalBudget / budget.periodDays;
   
-  // Actual daily budget = (totalBudget + all transactions) / remaining days
-  const actualDailyBudget = remaining / remainingDays;
-  
   // Calculate starting day limit for TODAY (what the daily budget was at the START of today)
   // Get all transactions BEFORE today
   const transactionsBeforeToday = budget.transactions.filter(t => {
@@ -89,7 +86,6 @@ export function calculateBudgetStats(budget: Budget): BudgetCalculations {
     currentDay,
     remainingDays,
     plannedDailyBudget,
-    actualDailyBudget,
     totalSpent,
     totalIncome,
     remaining,

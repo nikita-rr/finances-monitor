@@ -29,7 +29,6 @@ export interface BudgetCalculations {
   
   // Planned vs Actual
   plannedDailyBudget: number;
-  actualDailyBudget: number;
   
   // Remaining
   totalSpent: number;

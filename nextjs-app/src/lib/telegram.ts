@@ -282,7 +282,6 @@ function generateBudgetMessage(budget: Budget, stats: BudgetCalculations): strin
   message += `✅ Остаток: ${formatCurrency(stats.remaining)}\n\n`;
   
   message += `📉 Плановый дневной: ${formatCurrency(stats.plannedDailyBudget)}\n`;
-  message += `📈 Фактический дневной: ${formatCurrency(stats.actualDailyBudget)}\n\n`;
   
   message += `💸 Расходы за период: ${formatCurrency(stats.totalSpent)}\n`;
   message += `💵 Доходы за период: ${formatCurrency(stats.totalIncome)}\n\n`;

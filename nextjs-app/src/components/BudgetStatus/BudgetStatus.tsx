@@ -48,11 +48,7 @@ export default function BudgetStatus({ calculations, createdDate }: BudgetStatus
           <span className={styles.label}>📉 Плановый дневной:</span>
           <span className={styles.value}>{formatCurrency(stats.plannedDailyBudget)}</span>
         </div>
-        
-        <div className={styles.row}>
-          <span className={styles.label}>📈 Фактический дневной:</span>
-          <span className={styles.value}>{formatCurrency(stats.actualDailyBudget)}</span>
-        </div>
+
 
         <div className={styles.divider} />
         
