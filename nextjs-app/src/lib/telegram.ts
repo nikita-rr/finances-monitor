@@ -338,7 +338,17 @@ async function updateBudgetMessage(ctx: Context) {
 
 export async function notifyBudgetUpdate(): Promise<void> {
   const budget = getBudget();
-  if (!budget || !budget.telegramMessageId || !budget.telegramChatId || !bot) {
+  if (!budget || !bot) {
+    return;
+  }
+
+  // Если нет сообщения, но есть chatId - отправляем новое
+  if (!budget.telegramMessageId && budget.telegramChatId) {
+    await sendBudgetMessage(budget.telegramChatId);
+    return;
+  }
+
+  if (!budget.telegramMessageId || !budget.telegramChatId) {
     return;
   }
 
@@ -358,12 +368,71 @@ export async function notifyBudgetUpdate(): Promise<void> {
   }
 }
 
+// Отправляет новое сообщение о бюджете и сохраняет его ID
+export async function sendBudgetMessage(chatId: number): Promise<boolean> {
+  if (!bot) {
+    console.error('Bot not initialized');
+    return false;
+  }
+
+  const budget = getBudget();
+  if (!budget) {
+    console.error('No budget to send message for');
+    return false;
+  }
+
+  const stats = calculateBudgetStats(budget);
+  const message = generateBudgetMessage(budget, stats);
+
+  try {
+    const sentMessage = await bot.telegram.sendMessage(chatId, message, {
+      parse_mode: 'Markdown'
+    });
+
+    // Сохраняем ID сообщения для дальнейшего обновления
+    const { setTelegramMessage } = await import('./storage');
+    setTelegramMessage(chatId, sentMessage.message_id);
+    
+    console.log(`Budget message sent to chat ${chatId}, message ID: ${sentMessage.message_id}`);
+    return true;
+  } catch (error) {
+    console.error('Error sending budget message:', error);
+    return false;
+  }
+}
+
+// Проверяет и создает сообщение при запуске если его нет
+export async function ensureBudgetMessage(): Promise<void> {
+  const budget = getBudget();
+  if (!budget) {
+    console.log('No budget exists, skipping message creation');
+    return;
+  }
+
+  // Если уже есть сообщение - ничего не делаем
+  if (budget.telegramMessageId) {
+    console.log('Budget message already exists');
+    return;
+  }
+
+  // Если есть chatId - отправляем сообщение
+  if (budget.telegramChatId) {
+    console.log('Budget exists without message, creating new message...');
+    await sendBudgetMessage(budget.telegramChatId);
+  } else {
+    console.log('Budget exists but no chatId set, cannot send message');
+  }
+}
+
 export async function startBot(): Promise<void> {
   const telegrafBot = initBot();
   if (!telegrafBot) {
     console.error('Failed to initialize bot');
     return;
   }
+
+  // Проверяем и создаем сообщение для существующего бюджета
+  await ensureBudgetMessage();
 
   // Используем webhook в production или polling в development
   if (process.env.WEBHOOK_URL) {

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getBudget, createBudget } from '@/lib/storage';
 import { calculateBudgetStats } from '@/lib/calculations';
+import { sendBudgetMessage } from '@/lib/telegram';
 
 export async function GET() {
   const budget = getBudget();
@@ -51,6 +52,11 @@ export async function POST(request: NextRequest) {
 
     const budget = createBudget(amount, period, chatId);
     const calculations = calculateBudgetStats(budget);
+
+    // Отправляем сообщение в Telegram если есть chatId
+    if (chatId) {
+      await sendBudgetMessage(chatId);
+    }
 
     return NextResponse.json({
       success: true,
