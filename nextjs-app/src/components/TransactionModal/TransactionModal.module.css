@@ -28,8 +28,10 @@
   width: 100%;
   max-width: 500px;
   padding: 24px;
+  padding-bottom: 48px; /* увеличенный отступ снизу для клавиатуры */
   animation: slideUp 0.3s ease-out;
   box-shadow: var(--shadow-lg);
+  min-height: 320px;
 }
 
 @keyframes slideUp {
@@ -200,6 +202,7 @@
   cursor: pointer;
   transition: transform 0.15s, box-shadow 0.15s;
   margin-top: 8px;
+  margin-bottom: 12px; /* больше отступа снизу */
 }
 
 .button:hover {
