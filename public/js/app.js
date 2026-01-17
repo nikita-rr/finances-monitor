@@ -219,7 +219,10 @@ function renderBudgetStatus() {
   const planedRemainingCompleted = budget.monthlyBudget - planedSpentCompleted;
   const saved = remainingWithoutToday - planedRemainingCompleted;
 
-  let canSpendToday = dailyBudget + (saved > 0 ? saved : 0);
+  // Today's balance from daily budget
+  const todayBalance = dailyBudget - todayExpenses;
+  // Total can spend today (including saved)
+  const canSpendToday = dailyBudget + (saved > 0 ? saved : 0);
 
   // Calculate totals
   let totalExpenses = 0;
@@ -308,13 +311,17 @@ function renderBudgetStatus() {
             </div>
             <div class="status-row">
                 <span class="status-label">📈 Дневной лимит</span>
+                <span class="status-value">${dailyBudget.toFixed(2)} ₽</span>
+            </div>
+            <div class="status-row">
+                <span class="status-label">💎 Всего можно потратить</span>
                 <span class="status-value">${canSpendToday.toFixed(2)} ₽</span>
             </div>
             <div class="daily-limit">
                 <div class="daily-limit-label">📅 Баланс сегодня:</div>
                 <div class="daily-limit-value">
-                ${ canSpendToday + todayNet >= 0 ? "+" : "" }
-                ${(todayNet + canSpendToday).toFixed(2)} ₽
+                ${ todayBalance >= 0 ? "+" : "" }
+                ${todayBalance.toFixed(2)} ₽
                 </div>
             </div>
             ${warningHtml}
