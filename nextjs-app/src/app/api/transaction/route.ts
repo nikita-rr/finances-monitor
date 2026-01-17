@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { addTransaction, getBudget } from '@/lib/storage';
 import { calculateBudgetStats } from '@/lib/calculations';
 import { notifyBudgetUpdate } from '@/lib/telegram';
+import { budgetEvents } from '@/lib/events';
 
 export async function POST(request: NextRequest) {
   try {
@@ -45,6 +46,12 @@ export async function POST(request: NextRequest) {
 
     const updatedBudget = getBudget();
     const calculations = updatedBudget ? calculateBudgetStats(updatedBudget) : null;
+
+    // Эмитим событие для real-time обновлений клиентов
+    budgetEvents.emit({
+      budget: updatedBudget,
+      calculations
+    });
 
     return NextResponse.json({
       success: true,

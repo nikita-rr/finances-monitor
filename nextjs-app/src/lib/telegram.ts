@@ -384,7 +384,19 @@ async function updateBudgetMessage(ctx: Context) {
 
 export async function notifyBudgetUpdate(): Promise<void> {
   const budget = getBudget();
-  if (!budget || !bot) {
+  if (!budget) {
+    console.log('No budget to notify');
+    return;
+  }
+
+  // Инициализируем бота если он ещё не инициализирован
+  if (!bot) {
+    console.log('Bot not initialized, initializing...');
+    initBot();
+  }
+
+  if (!bot) {
+    console.error('Failed to initialize bot for notification');
     return;
   }
 
@@ -395,6 +407,7 @@ export async function notifyBudgetUpdate(): Promise<void> {
   }
 
   if (!budget.telegramMessageId || !budget.telegramChatId) {
+    console.log('No telegram message/chat configured for budget');
     return;
   }
 
