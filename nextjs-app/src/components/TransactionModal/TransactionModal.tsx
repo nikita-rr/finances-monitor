@@ -153,10 +153,11 @@ export default function TransactionModal({
 
           {error && <div className={styles.error}>{error}</div>}
           <div className={styles.stickyFooter}>
-            <button 
-              type="submit"
+            <button
+              type="button"
               className={`${styles.button} ${type === 'expense' ? styles.expenseBtn : styles.incomeBtn}`}
               disabled={loading}
+              onClick={handleSubmit}
             >
               {loading ? 'Добавление...' : (type === 'expense' ? '- Добавить расход' : '+ Добавить доход')}
             </button>
