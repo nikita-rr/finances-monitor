@@ -93,10 +93,7 @@ export default function DayNavigator({
   
   const startingDayLimit = calculateStartingDayLimit();
   // Баланс дня = лимит - расходы + доходы = сколько осталось/перерасход от лимита
-  // Если лимит 1000, потратили 500, доход 100 -> баланс = 1000 - 500 + 100 = 600 (осталось)
-  // Отображаем как разницу: dayIncome - dayExpenses (чистый результат дня)
-  const dayNetResult = dayIncome - dayExpenses; // чистый результат: доходы минус расходы
-  const dayBalance = startingDayLimit + dayNetResult; // остаток от лимита
+  const dayBalance = startingDayLimit - dayExpenses + dayIncome;
   
   // Navigation limits - can navigate all days in period (1 to periodDays)
   const canGoBack = selectedDayNum > 1;
@@ -175,13 +172,7 @@ export default function DayNavigator({
               <span className={styles.statValueIncome}>+{formatCurrency(dayIncome)}</span>
             </div>
             <div className={styles.statRow}>
-              <span className={styles.statLabel}>Итог дня:</span>
-              <span className={`${styles.statValue} ${dayNetResult >= 0 ? styles.positive : styles.negative}`}>
-                {dayNetResult >= 0 ? '+' : ''}{formatCurrency(dayNetResult)}
-              </span>
-            </div>
-            <div className={styles.statRow}>
-              <span className={styles.statLabel}>Остаток от лимита:</span>
+              <span className={styles.statLabel}>Баланс дня:</span>
               <span className={`${styles.statValue} ${dayBalance >= 0 ? styles.positive : styles.negative}`}>
                 {dayBalance >= 0 ? '+' : ''}{formatCurrency(dayBalance)}
               </span>
