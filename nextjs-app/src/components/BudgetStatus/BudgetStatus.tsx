@@ -74,7 +74,7 @@ export default function BudgetStatus({ calculations, createdDate }: BudgetStatus
             {stats.todayBalance >= 0 ? '+' : ''}{formatCurrency(stats.todayBalance)}
           </div>
           
-          {/* Предупреждения */}
+          {/* Предупреждение о перерасходе сегодня */}
           {stats.overspendToday > 0 && (
             <div className={styles.warning}>
               ⚠️ Перерасход сегодня: {formatCurrency(stats.overspendToday)}
@@ -82,35 +82,31 @@ export default function BudgetStatus({ calculations, createdDate }: BudgetStatus
           )}
 
           {/* Прогноз на завтра */}
-          {stats.dailyBudgetChange !== 0 && stats.remainingDays > 1 && (
-            <div className={stats.dailyBudgetChange < 0 ? styles.warning : styles.info}>
-              {stats.dailyBudgetChange < 0 ? (
+          {stats.remainingDays > 1 && (
+            <div className={stats.todayBalance < 0 ? styles.warning : styles.info}>
+              {stats.todayBalance < 0 ? (
                 <>
-                  📉 Завтра лимит уменьшится на: {formatCurrency(Math.abs(stats.dailyBudgetChange))}
-                  <br />
-                  <small>(будет {formatCurrency(stats.tomorrowDailyBudget)})</small>
+                  📉 Завтра лимит уменьшится до: {formatCurrency(stats.tomorrowDailyBudget)}
                 </>
               ) : (
                 <>
-                  📈 Если не потратить, завтра лимит увеличится на: {formatCurrency(stats.dailyBudgetChange)}
-                  <br />
-                  <small>(будет {formatCurrency(stats.tomorrowDailyBudget)})</small>
+                  📈 Если не тратить сегодня, завтра лимит будет: {formatCurrency(stats.tomorrowDailyBudget)}
                 </>
               )}
             </div>
           )}
         </div>
 
-        {/* Сбережения */}
-        {stats.saved > 0 && (
+        {/* Итоговая экономия/перерасход за весь период */}
+        {stats.saved > 0 && stats.todayBalance >= 0 && (
           <div className={styles.info}>
-            💎 Сэкономлено: {formatCurrency(stats.saved)}
+            💎 Сэкономлено за период: {formatCurrency(stats.saved)}
           </div>
         )}
         
         {stats.saved < 0 && (
           <div className={styles.warning}>
-            ⚠️ Перерасход: {formatCurrency(Math.abs(stats.saved))}
+            ⚠️ Перерасход за период: {formatCurrency(Math.abs(stats.saved))}
           </div>
         )}
       </div>
