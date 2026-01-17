@@ -204,8 +204,13 @@ function setupCommands(bot: Telegraf) {
         );
         await ctx.reply(`✅ Сообщение бюджета обновлено (ID: ${budget.id})`);
         return;
-      } catch (error) {
-        // Если не удалось обновить - создадим новое
+      } catch (error: any) {
+        // Если сообщение не изменилось - это нормально
+        if (error?.response?.description?.includes('message is not modified')) {
+          await ctx.reply(`✅ Сообщение бюджета уже актуально (ID: ${budget.id})`);
+          return;
+        }
+        // Если не удалось обновить по другой причине - создадим новое
         console.log('Could not update message, creating new one:', error);
       }
     }
@@ -404,7 +409,13 @@ export async function notifyBudgetUpdate(): Promise<void> {
       message,
       { parse_mode: 'Markdown' }
     );
-  } catch (error) {
+    console.log('Budget message updated successfully');
+  } catch (error: any) {
+    // Игнорируем ошибку если сообщение не изменилось
+    if (error?.response?.description?.includes('message is not modified')) {
+      console.log('Budget message already up to date');
+      return;
+    }
     console.error('Error notifying budget update:', error);
   }
 }
