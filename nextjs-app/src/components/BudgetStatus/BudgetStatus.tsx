@@ -62,16 +62,10 @@ export default function BudgetStatus({ calculations, createdDate }: BudgetStatus
           <span className={styles.valueIncome}>+{formatCurrency(stats.totalIncome)}</span>
         </div>
 
-        {/* Итоговая экономия/перерасход за весь период */}
+        {/* Итоговая экономия за весь период */}
         {stats.saved > 0 && stats.todayBalance >= 0 && (
           <div className={styles.info}>
             💎 Сэкономлено за период: {formatCurrency(stats.saved)}
-          </div>
-        )}
-        
-        {stats.saved < 0 && (
-          <div className={styles.warning}>
-            ⚠️ Перерасход за период: {formatCurrency(Math.abs(stats.saved))}
           </div>
         )}
       </div>
