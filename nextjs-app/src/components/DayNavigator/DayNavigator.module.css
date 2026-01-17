@@ -1,8 +1,9 @@
 .container {
-  background: var(--tg-theme-secondary-bg-color, #f4f4f5);
-  border-radius: 12px;
-  padding: 16px;
+  background: var(--surface-card, #f1f5f9);
+  border-radius: 16px;
+  padding: 20px;
   margin-bottom: 16px;
+  box-shadow: var(--shadow-sm);
 }
 
 .navigator {
@@ -17,18 +18,20 @@
   height: 44px;
   border-radius: 50%;
   border: none;
-  background: var(--tg-theme-button-color, #2481cc);
+  background: var(--gradient-primary);
   color: var(--tg-theme-button-text-color, #fff);
   font-size: 16px;
   cursor: pointer;
-  transition: opacity 0.2s, transform 0.1s;
+  transition: transform 0.15s, box-shadow 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
 }
 
 .navButton:hover:not(:disabled) {
-  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.35);
 }
 
 .navButton:active:not(:disabled) {
@@ -46,14 +49,14 @@
 }
 
 .dayNumber {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
-  color: var(--tg-theme-text-color, #000);
+  color: var(--tg-theme-text-color, #0f172a);
 }
 
 .dateText {
   font-size: 14px;
-  color: var(--tg-theme-hint-color, #999);
+  color: var(--tg-theme-hint-color, #64748b);
   margin-top: 4px;
   display: flex;
   align-items: center;
@@ -62,35 +65,39 @@
 }
 
 .todayBadge {
-  background: var(--tg-theme-button-color, #2481cc);
+  background: var(--gradient-primary);
   color: var(--tg-theme-button-text-color, #fff);
-  padding: 2px 8px;
-  border-radius: 10px;
+  padding: 3px 10px;
+  border-radius: 12px;
   font-size: 11px;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .todayButton {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   margin-top: 12px;
   background: transparent;
-  border: 1px solid var(--tg-theme-button-color, #2481cc);
-  color: var(--tg-theme-button-color, #2481cc);
-  border-radius: 8px;
+  border: 1.5px solid var(--color-primary, #6366f1);
+  color: var(--color-primary, #6366f1);
+  border-radius: 12px;
   font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.15s;
 }
 
 .todayButton:hover {
-  background: rgba(36, 129, 204, 0.1);
+  background: var(--color-primary-light, rgba(99, 102, 241, 0.1));
+  transform: translateY(-1px);
 }
 
 .dayStats {
   margin-top: 16px;
   padding-top: 16px;
-  border-top: 1px solid var(--tg-theme-hint-color, #ddd);
+  border-top: 1px solid var(--border-color-light, rgba(0, 0, 0, 0.06));
 }
 
 .statRow {
@@ -100,7 +107,7 @@
 }
 
 .statLabel {
-  color: var(--tg-theme-hint-color, #999);
+  color: var(--tg-theme-hint-color, #64748b);
   font-size: 14px;
 }
 
@@ -112,33 +119,33 @@
 .statValueExpense {
   font-weight: 600;
   font-size: 14px;
-  color: var(--color-danger, #f43f5e);
+  color: var(--color-danger, #ef4444);
 }
 
 .statValueIncome {
   font-weight: 600;
   font-size: 14px;
-  color: var(--color-success, #10b981);
+  color: var(--color-success, #22c55e);
 }
 
 .positive {
-  color: var(--color-success, #10b981);
+  color: var(--color-success, #22c55e);
 }
 
 .negative {
-  color: var(--color-danger, #f43f5e);
+  color: var(--color-danger, #ef4444);
 }
 
 .transactionsList {
   margin-top: 16px;
   padding-top: 16px;
-  border-top: 1px solid var(--tg-theme-hint-color, #ddd);
+  border-top: 1px solid var(--border-color-light, rgba(0, 0, 0, 0.06));
 }
 
 .transactionsTitle {
   font-size: 14px;
   font-weight: 600;
-  color: var(--tg-theme-text-color, #000);
+  color: var(--tg-theme-text-color, #0f172a);
   margin-bottom: 12px;
 }
 
@@ -146,10 +153,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px;
-  background: var(--tg-theme-bg-color, #fff);
-  border-radius: 8px;
+  padding: 12px 14px;
+  background: var(--surface-elevated, #fff);
+  border-radius: 12px;
   margin-bottom: 8px;
+  box-shadow: var(--shadow-sm);
 }
 
 .transactionInfo {
@@ -160,12 +168,12 @@
 
 .transactionDesc {
   font-size: 14px;
-  color: var(--tg-theme-text-color, #000);
+  color: var(--tg-theme-text-color, #0f172a);
 }
 
 .transactionTime {
   font-size: 12px;
-  color: var(--tg-theme-hint-color, #999);
+  color: var(--tg-theme-hint-color, #64748b);
 }
 
 .transactionAmount {
@@ -174,30 +182,32 @@
 }
 
 .expense {
-  color: var(--color-danger, #f43f5e);
+  color: var(--color-danger, #ef4444);
 }
 
 .income {
-  color: var(--color-success, #10b981);
+  color: var(--color-success, #22c55e);
 }
 
 .emptyDay {
   margin-top: 16px;
-  padding: 20px;
+  padding: 24px;
   text-align: center;
-  color: var(--tg-theme-hint-color, #6b7280);
+  color: var(--tg-theme-hint-color, #64748b);
   font-size: 14px;
-  background: var(--tg-theme-bg-color, #fafafa);
-  border-radius: 10px;
+  background: var(--surface-elevated, #fff);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
 }
 
 .plannedBadge {
-  background: var(--color-primary-light, #e0e7ff);
+  background: var(--color-primary-light, rgba(99, 102, 241, 0.1));
   color: var(--color-primary-dark, #4f46e5);
-  padding: 8px 12px;
-  border-radius: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
   font-size: 13px;
   font-weight: 600;
   text-align: center;
   margin-bottom: 12px;
+  border: 1px solid rgba(99, 102, 241, 0.2);
 }

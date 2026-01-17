@@ -1,35 +1,42 @@
 .container {
-  background: var(--tg-theme-secondary-bg-color, #f4f4f5);
-  border-radius: 12px;
-  padding: 16px;
+  background: var(--surface-card, #f1f5f9);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
 }
 
 .title {
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
   margin: 0 0 16px 0;
-  color: var(--tg-theme-text-color, #000);
+  color: var(--tg-theme-text-color, #0f172a);
 }
 
 .empty {
   text-align: center;
-  color: var(--tg-theme-hint-color, #999);
-  padding: 20px;
+  color: var(--tg-theme-hint-color, #64748b);
+  padding: 24px;
 }
 
 .list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px;
-  background: var(--tg-theme-bg-color, #fff);
-  border-radius: 8px;
+  padding: 14px 16px;
+  background: var(--surface-elevated, #fff);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.15s;
+}
+
+.item:active {
+  transform: scale(0.98);
 }
 
 .info {
@@ -39,7 +46,7 @@
 
 .description {
   font-weight: 500;
-  color: var(--tg-theme-text-color, #000);
+  color: var(--tg-theme-text-color, #0f172a);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -47,13 +54,13 @@
 
 .date {
   font-size: 12px;
-  color: var(--tg-theme-hint-color, #999);
+  color: var(--tg-theme-hint-color, #64748b);
   margin-top: 4px;
 }
 
 .user {
   font-size: 11px;
-  color: var(--tg-theme-hint-color, #999);
+  color: var(--tg-theme-hint-color, #64748b);
   margin-top: 2px;
 }
 
@@ -65,9 +72,9 @@
 }
 
 .expense {
-  color: var(--color-danger, #f43f5e);
+  color: var(--color-danger, #ef4444);
 }
 
 .income {
-  color: var(--color-success, #10b981);
+  color: var(--color-success, #22c55e);
 }

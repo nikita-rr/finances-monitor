@@ -3,9 +3,11 @@
 }
 
 .statusCard {
-  background: var(--tg-theme-secondary-bg-color, #f4f4f5);
-  border-radius: 12px;
-  padding: 16px;
+  background: var(--surface-card, #f1f5f9);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color-light);
 }
 
 .row {
@@ -16,44 +18,48 @@
 }
 
 .label {
-  color: var(--tg-theme-hint-color, #999);
+  color: var(--tg-theme-hint-color, #64748b);
   font-size: 14px;
 }
 
 .value {
   font-weight: 600;
-  color: var(--tg-theme-text-color, #000);
+  color: var(--tg-theme-text-color, #0f172a);
 }
 
 .valueExpense {
   font-weight: 600;
-  color: var(--color-danger, #f43f5e);
+  color: var(--color-danger, #ef4444);
 }
 
 .valueIncome {
   font-weight: 600;
-  color: var(--color-success, #10b981);
+  color: var(--color-success, #22c55e);
 }
 
 .divider {
   height: 1px;
-  background: var(--tg-theme-hint-color, #ddd);
-  opacity: 0.3;
+  background: var(--border-color, #e2e8f0);
+  opacity: 0.5;
   margin: 8px 0;
 }
 
 .todaySection {
-  background: var(--tg-theme-bg-color, #fff);
-  border-radius: 8px;
+  background: var(--surface-elevated, #ffffff);
+  border-radius: 12px;
   padding: 16px;
   margin: 12px 0;
   text-align: center;
+  box-shadow: var(--shadow-sm);
 }
 
 .todayLabel {
-  font-size: 14px;
-  color: var(--tg-theme-hint-color, #999);
+  font-size: 13px;
+  color: var(--tg-theme-hint-color, #64748b);
   margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 500;
 }
 
 .todayValue {
@@ -62,29 +68,31 @@
 }
 
 .positive {
-  color: var(--color-success, #10b981);
+  color: var(--color-success, #22c55e);
 }
 
 .negative {
-  color: var(--color-danger, #f43f5e);
+  color: var(--color-danger, #ef4444);
 }
 
 .warning {
   background: var(--color-warning-light, #fef3c7);
   color: var(--color-warning-dark, #d97706);
-  padding: 12px;
-  border-radius: 10px;
+  padding: 14px 16px;
+  border-radius: 12px;
   margin-top: 12px;
   font-size: 14px;
   font-weight: 500;
+  border: 1px solid rgba(245, 158, 11, 0.2);
 }
 
 .info {
   background: var(--color-info-light, #dbeafe);
   color: var(--color-info-dark, #2563eb);
-  padding: 12px;
-  border-radius: 10px;
+  padding: 14px 16px;
+  border-radius: 12px;
   margin-top: 12px;
   font-size: 14px;
   font-weight: 500;
+  border: 1px solid rgba(59, 130, 246, 0.2);
 }
