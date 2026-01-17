@@ -74,10 +74,10 @@ export default function BudgetStatus({ calculations, createdDate }: BudgetStatus
             {stats.todayBalance >= 0 ? '+' : ''}{formatCurrency(stats.todayBalance)}
           </div>
           
-          {/* Предупреждение о перерасходе сегодня */}
-          {stats.overspendToday > 0 && (
+          {/* Предупреждение о перерасходе сегодня - только при отрицательном балансе */}
+          {stats.todayBalance < 0 && (
             <div className={styles.warning}>
-              ⚠️ Перерасход сегодня: {formatCurrency(stats.overspendToday)}
+              ⚠️ Перерасход сегодня: {formatCurrency(Math.abs(stats.todayBalance))}
             </div>
           )}
 
