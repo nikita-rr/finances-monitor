@@ -54,27 +54,34 @@ export function calculateBudgetStats(budget: Budget): BudgetCalculations {
   // Actual daily budget = (totalBudget + all transactions) / remaining days
   const actualDailyBudget = remaining / remainingDays;
   
-  // Today's balance = actual daily budget - today's expenses + today's income
-  // Or simplified: actual daily budget + today's net
-  const remainingWithoutToday = remaining - todayNet;
-  const dailyBudgetWithoutToday = remainingWithoutToday / budget.periodDays;
-  const todayBalance = dailyBudgetWithoutToday - todayExpenses + todayIncome;
+  // Calculate starting day limit for TODAY (what the daily budget was at the START of today)
+  // Get all transactions BEFORE today
+  const transactionsBeforeToday = budget.transactions.filter(t => {
+    const tDate = new Date(t.date);
+    return tDate.toDateString() !== today;
+  });
+  const spentBeforeToday = transactionsBeforeToday.reduce((sum, t) => sum + t.amount, 0);
+  const remainingAtTodayStart = budget.totalBudget + spentBeforeToday;
+  const startingDayLimit = remainingAtTodayStart / remainingDays;
   
-  // Overspend today
-  const overspendToday = Math.max(0, todayExpenses - dailyBudgetWithoutToday);
+  // Today's balance = starting day limit - today's expenses + today's income
+  const todayBalance = startingDayLimit - todayExpenses + todayIncome;
   
-  // Savings calculation
+  // Overspend today (if todayBalance is negative)
+  const overspendToday = Math.max(0, -todayBalance);
+  
+  // Savings calculation - how much we saved compared to plan
   const completedDays = currentDay - 1;
   const plannedSpentCompleted = plannedDailyBudget * completedDays;
   const plannedRemainingCompleted = budget.totalBudget - plannedSpentCompleted;
-  const saved = remainingWithoutToday - plannedRemainingCompleted;
+  const saved = remainingAtTodayStart - plannedRemainingCompleted;
   
-  // Tomorrow forecast
+  // Tomorrow forecast - what will be the daily limit tomorrow
   const daysLeftAfterToday = remainingDays - 1;
   const tomorrowDailyBudget = daysLeftAfterToday > 0 
     ? remaining / daysLeftAfterToday 
     : remaining;
-  const dailyBudgetChange = tomorrowDailyBudget - dailyBudgetWithoutToday;
+  const dailyBudgetChange = tomorrowDailyBudget - startingDayLimit;
   
   return {
     totalBudget: budget.totalBudget,
