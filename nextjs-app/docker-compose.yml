@@ -1,0 +1,27 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - BOT_TOKEN=${BOT_TOKEN}
+      - WEBAPP_URL=${WEBAPP_URL}
+      - WEBHOOK_URL=${WEBHOOK_URL}
+      - DATA_FILE=/app/data/data.json
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+
+  # Nginx reverse proxy with SSL (optional, for production)
+  # nginx:
+  #   image: nginx:alpine
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+  #     - ./certbot/conf:/etc/letsencrypt:ro
+  #     - ./certbot/www:/var/www/certbot:ro
+  #   depends_on:
+  #     - app
+  #   restart: unless-stopped

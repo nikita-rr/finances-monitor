@@ -1,0 +1,88 @@
+.container {
+  margin-bottom: 16px;
+}
+
+.statusCard {
+  background: var(--tg-theme-secondary-bg-color, #f4f4f5);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.label {
+  color: var(--tg-theme-hint-color, #999);
+  font-size: 14px;
+}
+
+.value {
+  font-weight: 600;
+  color: var(--tg-theme-text-color, #000);
+}
+
+.valueExpense {
+  font-weight: 600;
+  color: #e53935;
+}
+
+.valueIncome {
+  font-weight: 600;
+  color: #43a047;
+}
+
+.divider {
+  height: 1px;
+  background: var(--tg-theme-hint-color, #ddd);
+  opacity: 0.3;
+  margin: 8px 0;
+}
+
+.todaySection {
+  background: var(--tg-theme-bg-color, #fff);
+  border-radius: 8px;
+  padding: 16px;
+  margin: 12px 0;
+  text-align: center;
+}
+
+.todayLabel {
+  font-size: 14px;
+  color: var(--tg-theme-hint-color, #999);
+  margin-bottom: 8px;
+}
+
+.todayValue {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.positive {
+  color: #43a047;
+}
+
+.negative {
+  color: #e53935;
+}
+
+.warning {
+  background: #fff3e0;
+  color: #e65100;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 12px;
+  font-size: 14px;
+}
+
+.info {
+  background: #e3f2fd;
+  color: #1565c0;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 12px;
+  font-size: 14px;
+}
