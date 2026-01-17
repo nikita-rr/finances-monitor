@@ -6,7 +6,7 @@
   display: flex;
   gap: 12px;
   padding: 16px;
-  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  padding-bottom: calc(24px + env(safe-area-inset-bottom));
   background: var(--surface-elevated, #ffffff);
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
   border-top: 1px solid var(--border-color-light);
@@ -18,7 +18,7 @@
   flex: 1;
   padding: 16px 20px;
   border: none;
-  border-radius: 14px;
+  border-radius: 50px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
