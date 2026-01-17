@@ -8,6 +8,7 @@ services:
       - BOT_TOKEN=${BOT_TOKEN}
       - WEBAPP_URL=https://renewer-rr.online
       - DATA_FILE=/app/data/data.json
+      - TZ=Europe/Moscow
     volumes:
       - ./data:/app/data
     networks:
