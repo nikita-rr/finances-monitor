@@ -95,12 +95,14 @@
 }
 
 .form {
+  --footer-height: 76px;
   flex: 1 1 auto;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 16px;
   padding: 0 24px 24px 24px;
+  padding-bottom: calc(var(--footer-height) + 16px);
 }
 
 .field {
@@ -263,6 +265,21 @@
   font-size: 14px;
   font-weight: 500;
   border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.stickyFooter {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--footer-height);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  background: var(--surface-elevated, #fff);
+  z-index: 4;
+  box-shadow: 0 -6px 18px rgba(0,0,0,0.06);
+  border-radius: 0 0 24px 24px;
 }
 
 
