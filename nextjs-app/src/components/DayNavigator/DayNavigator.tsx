@@ -192,7 +192,7 @@ export default function DayNavigator({
       {!isFutureDay && dayTransactions.length > 0 && (
         <div className={styles.transactionsList}>
           <div className={styles.transactionsTitle}>Транзакции за день:</div>
-          {dayTransactions.map(t => (
+          {[...dayTransactions].reverse().map(t => (
             <div key={t.id} className={styles.transactionItem}>
               <div className={styles.transactionInfo}>
                 <span className={styles.transactionDesc}>{t.description}</span>
